@@ -16,7 +16,7 @@ fun NavigationRoutes() {
         startDestination = Destination.LoginScreen.route
     ){
         composable(Destination.LoginScreen.route){
-            LoginScreen()
+            LoginScreen(navController)
         }
         composable(Destination.CadastroScreen.route){
             CadastroScreen()
@@ -27,6 +27,9 @@ fun NavigationRoutes() {
 //        composable(Destination.ProfileScreen.route){
 //            ProfileScreen()
 //        }
+        composable(Destination.HomeScreen.route){
+            HomeScreen()
+        }
     }
 
 }

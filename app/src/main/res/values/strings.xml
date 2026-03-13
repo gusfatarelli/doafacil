@@ -11,4 +11,5 @@
     <string name="your_name">SeuNome</string>
     <string name="your_password">SuaSenha</string>
     <string name="create_account">CriarConta</string>
+    <string name="doaf_cil">DoaFácil</string>
 </resources>

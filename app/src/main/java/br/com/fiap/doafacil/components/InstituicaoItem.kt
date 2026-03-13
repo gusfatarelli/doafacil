@@ -207,7 +207,7 @@ fun InstituicaoCardBanco(modifier: Modifier = Modifier) {
                         Text(text = "Normal", color = Color(0xFF795548), fontSize = 11.sp)
                         Spacer(modifier = Modifier.width(4.dp))
                         Icon(
-                            imageVector = Icons.Default.WbSunny,
+                           // imageVector = Icons.Default.WbSunny,
                             contentDescription = "",
                             tint = Color(0xFFFFA000),
                             modifier = Modifier.size(12.dp)
