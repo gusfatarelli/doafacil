@@ -85,7 +85,7 @@ fun HomeScreen(navController: NavController, email: String?) {
     Surface(modifier = Modifier.fillMaxSize()) {
         Scaffold(
             topBar = { br.com.fiap.doafacil.screens.MyTopAppBar(email!!, navController) },
-            bottomBar = { MyBottomNavigation() },
+            bottomBar = { MyBottomNavigation(navController = navController) },
             floatingActionButton = {
                 FloatingActionButton(
                     onClick = {},
@@ -190,38 +190,6 @@ data class BottomNavigationItem(
     val title: String,
     val icon: ImageVector
 )
-
-
-@Composable
-fun BottomAppBar() {
-
-    val itens = listOf(
-        BottomNavigationItem("Home", icon = Icons.Default.Home),
-        BottomNavigationItem("Explorar", icon = Icons.Default.Search),
-        BottomNavigationItem("Profile", icon = Icons.Default.Person),
-    )
-
-    NavigationBar(
-        containerColor = MaterialTheme.colorScheme.tertiary
-    ) {
-        itens.forEach { NavigationItem ->
-            NavigationBarItem(
-                selected = false,
-                onClick = {},
-                icon = {
-                    Icon(imageVector = NavigationItem.icon,
-                        contentDescription = NavigationItem.title,
-                        tint = MaterialTheme.colorScheme.primary)
-                },
-                label = {Text(
-                    text = NavigationItem.title,
-                    style = MaterialTheme.typography.displaySmall,
-                    color = MaterialTheme.colorScheme.primary
-                )}
-            )
-        }
-    }
-}
 
 //TELA DE CONTEÚDO
 

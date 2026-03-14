@@ -68,7 +68,7 @@ fun DoacaoScreen(navController: NavController, modifier: Modifier = Modifier) {
 
             topBar = {},
 
-            bottomBar = { BottomAppBar() },
+            bottomBar = { MyBottomNavigation(navController = navController) },
 
             floatingActionButton = {}
         )

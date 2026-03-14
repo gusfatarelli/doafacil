@@ -53,7 +53,7 @@ fun ExplorationScreen(navController: NavController, modifier: Modifier = Modifie
 
             topBar = {},
 
-            bottomBar = { MyBottomNavigation() },
+            bottomBar = { MyBottomNavigation(navController = navController) },
 
             floatingActionButton = {}
         )

@@ -34,8 +34,10 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -51,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import br.com.fiap.doafacil.R
+import br.com.fiap.doafacil.navigation.Destination
 import br.com.fiap.doafacil.ui.theme.DarkBlue
 import br.com.fiap.doafacil.ui.theme.DoafacilTheme
 
@@ -108,14 +111,18 @@ fun LoginScreen(navController: NavController) {
                 contentDescription = "Pessoas ilustrativas",
                 modifier = Modifier.fillMaxWidth().padding(16.dp)
             )
-            LoginForm()
+            LoginForm(navController = navController)
             Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }
 // Caixa do e-mail
 @Composable
-fun LoginForm(modifier: Modifier = Modifier) {
+fun LoginForm(modifier: Modifier = Modifier, navController: NavController) {
+
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -124,8 +131,8 @@ fun LoginForm(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Center
     ) {
         OutlinedTextField(
-            value = "",
-            onValueChange = {},
+            value = email,
+            onValueChange = { emailState -> email = emailState },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 4.dp),
@@ -151,8 +158,8 @@ fun LoginForm(modifier: Modifier = Modifier) {
         )
         // Caixa senha
         OutlinedTextField(
-            value = "",
-            onValueChange = {},
+            value = password,
+            onValueChange = { passwordState -> password = passwordState },
             modifier = Modifier
                 .fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
@@ -184,7 +191,7 @@ fun LoginForm(modifier: Modifier = Modifier) {
         )
         Spacer(modifier = Modifier.height(32.dp))
         Button(
-            onClick = {},
+            onClick = { navController.navigate("${Destination.HomeScreen.route}/${email}") },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp),
@@ -195,9 +202,12 @@ fun LoginForm(modifier: Modifier = Modifier) {
                 style = MaterialTheme.typography.labelMedium
             )
         }
+
         Spacer(modifier = Modifier.height(16.dp))
+
+        // Botão entrar como convidado
         Button(
-            onClick = {},
+            onClick = { navController.navigate("${Destination.HomeScreen.route}/convidado") },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp),
@@ -227,6 +237,7 @@ fun LoginForm(modifier: Modifier = Modifier) {
                     textDecoration = TextDecoration.Underline
                 ),
                 modifier = Modifier.padding(8.dp)
+                    .clickable { navController.navigate(Destination.CadastroScreen.route) }
             )
         }
     }
@@ -236,7 +247,7 @@ fun LoginForm(modifier: Modifier = Modifier) {
 @Composable
 private fun LoginFormPreview() {
     DoafacilTheme {
-        LoginForm()
+        LoginForm(navController = rememberNavController())
     }
 }
 

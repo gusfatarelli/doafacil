@@ -17,12 +17,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 import br.com.fiap.doafacil.R
 import br.com.fiap.doafacil.ui.theme.LightGreen
@@ -36,7 +40,7 @@ val PrimaryBlue = Color(0xFF1A4789)
 val SuccessGreen = Color(0xFF4CAF50)
 
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(navController: NavController) {
     val scrollState = rememberScrollState()
 
     Scaffold(
@@ -278,5 +282,5 @@ fun MyBottomNavigation(navController: NavController) {
 @Preview(showBackground = true)
 @Composable
 fun FullPreview() {
-    ProfileScreen()
+    ProfileScreen(navController = NavController(LocalContext.current))
 }
