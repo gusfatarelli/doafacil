@@ -22,7 +22,10 @@ class UserPreferences(context: Context) {
     fun isLoggedIn(): Boolean = getEmail().isNotEmpty()
 
     fun clearUser() {
-        prefs.edit().clear().apply()
+        prefs.edit()
+            .remove("user_email")
+            .remove("user_name")
+            .apply()
     }
 
     fun saveDoacaoItens(itensSelecionados: String) {

@@ -127,6 +127,23 @@ fun SignupUserForm(navController: NavController?, modifier: Modifier = Modifier)
     var isPasswordError by remember { mutableStateOf(false) }
     var showDialogError by remember { mutableStateOf(false) }
     var showDialogEmailExists by remember { mutableStateOf(false) }
+    var showDialogSuccess by remember { mutableStateOf(false) }
+
+    if (showDialogSuccess) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = { Text("Cadastro realizado! 🎉") },
+            text = { Text("Sua conta foi criada com sucesso. Faça login para continuar.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showDialogSuccess = false
+                    navController?.navigate(Destination.LoginScreen.route) {
+                        popUpTo(Destination.CadastroScreen.route) { inclusive = true }
+                    }
+                }) { Text("Fazer Login") }
+            }
+        )
+    }
 
     fun validate(): Boolean {
         isNameError = name.length < 3
@@ -134,9 +151,6 @@ fun SignupUserForm(navController: NavController?, modifier: Modifier = Modifier)
         isPasswordError = password.length < 3
         return !isNameError && !isEmailError && !isPasswordError
     }
-
-
-    //val userRepository = SharedPreferencesUserRepository(LocalContext.current)
 
     Column(
         modifier = Modifier
@@ -337,12 +351,13 @@ fun SignupUserForm(navController: NavController?, modifier: Modifier = Modifier)
                         showDialogEmailExists = true
                     } else {
                         userPrefs.registerUser(email, name, password)
-                        userPrefs.saveUser(email, name)
-                        navController?.navigate("${Destination.HomeScreen.route}/$email") {
+
+                        navController?.navigate(Destination.LoginScreen.route) {
                             popUpTo(Destination.CadastroScreen.route) { inclusive = true }
                         }
                     }
                 } else {
+                    userPrefs.registerUser(email, name, password)
                     showDialogError = true
                 }
             },
