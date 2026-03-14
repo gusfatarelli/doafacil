@@ -86,7 +86,6 @@ fun DoacaoScreen(navController: NavController, modifier: Modifier = Modifier) {
 
 @Composable
 fun ContentScreenDonation(modifier: Modifier = Modifier, navController: NavController) {
-
     val context = LocalContext.current
     val userPrefs = remember { UserPreferences(context) }
 
@@ -94,40 +93,34 @@ fun ContentScreenDonation(modifier: Modifier = Modifier, navController: NavContr
     var tipoDoacao by remember { mutableStateOf("itens") }
     var tipoMetodo by remember { mutableStateOf(userPrefs.getMetodoEntrega()) }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(modifier = Modifier.fillMaxSize()) {
+    LazyColumn(modifier = modifier.fillMaxSize()) {
+        item { HeaderDonation() }
+        item { OngHeaderDoacao() }
+        item { DonationChoices(tipoDoacao = tipoDoacao, onTipoChange = { tipoDoacao = it }) }
 
-            HeaderDonation()
-            OngHeaderDoacao()
-
-            LazyColumn(modifier = modifier.fillMaxWidth()) {
-                item { DonationChoices(tipoDoacao = tipoDoacao, onTipoChange = { tipoDoacao = it }) }
-                if (tipoDoacao == "itens") {
-                    item {
-                        Text(
-                            text = "Selecione os Itens: 👕🧺",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                        )
-                    }
-
-                    items(itens) { item ->
-                        DoacaoItemCard(
-                            item = item,
-                            onSelecionadoChange = { checked ->
-                                itens =
-                                    itens.map { if (it.id == item.id) it.copy(selecionado = checked) else it }
-                            },
-                            onQuantidadeChange = { novaQtd ->
-                                itens =
-                                    itens.map { if (it.id == item.id) it.copy(quantidade = novaQtd) else it }
-                            }
-                        )
-                    }
-                }
+        if (tipoDoacao == "itens") {
+            item {
+                Text(
+                    text = "Selecione os Itens: 👕🧺",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                )
             }
+            items(itens) { item ->
+                DoacaoItemCard(
+                    item = item,
+                    onSelecionadoChange = { checked ->
+                        itens = itens.map { if (it.id == item.id) it.copy(selecionado = checked) else it }
+                    },
+                    onQuantidadeChange = { novaQtd ->
+                        itens = itens.map { if (it.id == item.id) it.copy(quantidade = novaQtd) else it }
+                    }
+                )
+            }
+        }
 
+        item {
             DonationConfirmations(
                 tipoMetodo = tipoMetodo,
                 onTipoChange = {
@@ -141,7 +134,6 @@ fun ContentScreenDonation(modifier: Modifier = Modifier, navController: NavContr
                     userPrefs.saveDoacaoItens(selecionados)
                 }
             )
-
         }
     }
 }

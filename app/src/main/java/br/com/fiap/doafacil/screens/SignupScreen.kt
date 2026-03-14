@@ -6,12 +6,15 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AttachEmail
 import androidx.compose.material.icons.filled.Beenhere
@@ -32,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -45,12 +49,22 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import br.com.fiap.doafacil.R
 import br.com.fiap.doafacil.navigation.Destination
+import br.com.fiap.doafacil.repository.UserPreferences
 import br.com.fiap.doafacil.ui.theme.DarkBlue
 import br.com.fiap.doafacil.ui.theme.DoafacilTheme
 
 @Composable
-fun CadastroScreen(modifier: Modifier = Modifier) {
-
+fun CadastroScreen(navController: NavController, modifier: Modifier = Modifier) {
+    val scrollState = rememberScrollState()
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        TituloCadastro()
+        SignupUserForm(navController = navController)
+    }
 }
 
 @Composable
@@ -99,48 +113,29 @@ private fun TituloCadastroPrevier() {
 }
 
 @Composable
-fun SignupUserForm(navController: NavController?, profileImage: Bitmap) {
+fun SignupUserForm(navController: NavController?, modifier: Modifier = Modifier) {
 
-    //Variáveis de estado para controlar os valores exibidos no
-    //OutlinedTextField
-    var name by remember {
-        mutableStateOf("")
-    }
+    //Criar uma instância do sharedPreferencesUserRepository
+    val context = LocalContext.current
+    val userPrefs = remember { UserPreferences(context) }
 
-    var email by remember {
-        mutableStateOf("")
-    }
-
-    var password by remember {
-        mutableStateOf("")
-    }
-
-    //Criar variáveis de estado para verificar se os dados estão corretos
-    var isNameError by remember {
-        mutableStateOf(false)
-    }
-    var isEmailError by remember {
-        mutableStateOf(false)
-    }
-    var isPasswordError by remember {
-        mutableStateOf(false)
-    }
-
-    //Variável de estado para controlar a exibição da mensagem de erro
-
+    var name by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var isNameError by remember { mutableStateOf(false) }
+    var isEmailError by remember { mutableStateOf(false) }
+    var isPasswordError by remember { mutableStateOf(false) }
     var showDialogError by remember { mutableStateOf(false) }
-    var showDialogSuccess by remember { mutableStateOf(false) }
+    var showDialogEmailExists by remember { mutableStateOf(false) }
 
-    // Função para verificar se os dados estão corretos
     fun validate(): Boolean {
         isNameError = name.length < 3
         isEmailError = email.length < 3 || !Patterns.EMAIL_ADDRESS.matcher(email).matches()
         isPasswordError = password.length < 3
-
         return !isNameError && !isEmailError && !isPasswordError
     }
 
-    //Criar uma instância do sharedPreferencesUserRepository
+
     //val userRepository = SharedPreferencesUserRepository(LocalContext.current)
 
     Column(
@@ -334,77 +329,51 @@ fun SignupUserForm(navController: NavController?, profileImage: Bitmap) {
 
         //Botão Create Account
         Spacer(modifier = Modifier.height(32.dp))
+
         Button(
             onClick = {
-                if (validate()){
-//
-//                    userRepository.saveUser(
-//                        User(
-//                            name = name,
-//                            password = password,
-//                            email = email,
-//                            userImage = convertBitmapToByteArray(profileImage)
-//                        )
-//                    )
-                    showDialogSuccess = true
+                if (validate()) {
+                    if (userPrefs.userExists(email)) {
+                        showDialogEmailExists = true
+                    } else {
+                        userPrefs.registerUser(email, name, password)
+                        userPrefs.saveUser(email, name)
+                        navController?.navigate("${Destination.HomeScreen.route}/$email") {
+                            popUpTo(Destination.CadastroScreen.route) { inclusive = true }
+                        }
+                    }
                 } else {
                     showDialogError = true
                 }
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp),
+            modifier = Modifier.fillMaxWidth().height(48.dp),
             shape = RoundedCornerShape(8.dp)
         ) {
-
-            Text(
-                text = stringResource(R.string.create_account),
-                style = MaterialTheme.typography.labelMedium,
-            )
+            Text(text = stringResource(R.string.create_account), style = MaterialTheme.typography.labelMedium)
         }
-
-        Row {
-            Text(
-                text = "Não tem conta?"
-            )
-
-            TextButton(
-                onClick = {}
-            ) { Text(
-                text = "Cadastre-se"
-            ) }
-        }
-
     }
-    //Caixa de Diálogo de Sucesso
-    if (showDialogSuccess) {
 
+    if (showDialogEmailExists) {
         AlertDialog(
-            onDismissRequest = { showDialogError = false },
-            title = { Text(text = "Success") },
-            text = { Text(text = "Account Created with Success") },
+            onDismissRequest = { showDialogEmailExists = false },
+            title = { Text("E-mail já cadastrado") },
+            text = { Text("Este e-mail já possui uma conta. Faça login.") },
             confirmButton = {
-                TextButton(
-                    onClick = {
-                        showDialogSuccess = false
-                        navController?.navigate(Destination.LoginScreen.route)
-                    }
-                ) { }
+                TextButton(onClick = {
+                    showDialogEmailExists = false
+                    navController?.navigate(Destination.LoginScreen.route)
+                }) { Text("Ir para Login") }
             }
         )
     }
-    //caixa de diálogo de erro
+
     if (showDialogError) {
         AlertDialog(
-            onDismissRequest = { showDialogError = false},
-            title = { Text(text = "Error") },
-            text = { Text(text = "Please fill in all fields correctly") },
+            onDismissRequest = { showDialogError = false },
+            title = { Text("Erro") },
+            text = { Text("Preencha todos os campos corretamente.") },
             confirmButton = {
-                TextButton(
-                    onClick = {
-                        showDialogError = false
-                    }
-                ) { Text(text = "Ok") }
+                TextButton(onClick = { showDialogError = false }) { Text("Ok") }
             }
         )
     }

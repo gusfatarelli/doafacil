@@ -37,5 +37,25 @@ class UserPreferences(context: Context) {
 
     fun getMetodoEntrega(): String = prefs.getString("metodo_entrega", "Levar ao Local") ?: "Levar ao Local"
 
+    fun userExists(email: String): Boolean {
+        val emails = prefs.getStringSet("registered_emails", emptySet()) ?: emptySet()
+        return email in emails
+    }
+
+    fun registerUser(email: String, name: String, password: String) {
+        val emails = prefs.getStringSet("registered_emails", emptySet())?.toMutableSet() ?: mutableSetOf()
+        emails.add(email)
+        prefs.edit()
+            .putStringSet("registered_emails", emails)
+            .putString("user_name_$email", name)
+            .putString("user_password_$email", password)
+            .apply()
+    }
+
+    fun checkPassword(email: String, password: String): Boolean {
+        val saved = prefs.getString("user_password_$email", null)
+        return saved == password
+    }
+
 }
 

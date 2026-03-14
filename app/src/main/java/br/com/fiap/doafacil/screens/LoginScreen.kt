@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.RemoveRedEye
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -128,6 +129,31 @@ fun LoginForm(modifier: Modifier = Modifier, navController: NavController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
+    var showDialogUserNotFound by remember { mutableStateOf(false) }
+    var showDialogWrongPassword by remember { mutableStateOf(false) }
+
+    if (showDialogUserNotFound) {
+        AlertDialog(
+            onDismissRequest = { showDialogUserNotFound = false },
+            title = { Text("Usuário não encontrado") },
+            text = { Text("Este e-mail não está cadastrado.") },
+            confirmButton = {
+                TextButton(onClick = { showDialogUserNotFound = false }) { Text("Ok") }
+            }
+        )
+    }
+
+    if (showDialogWrongPassword) {
+        AlertDialog(
+            onDismissRequest = { showDialogWrongPassword = false },
+            title = { Text("Senha incorreta") },
+            text = { Text("A senha informada está incorreta.") },
+            confirmButton = {
+                TextButton(onClick = { showDialogWrongPassword = false }) { Text("Ok") }
+            }
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -198,9 +224,15 @@ fun LoginForm(modifier: Modifier = Modifier, navController: NavController) {
         // Botão entrar
         Button(
             onClick = {
-                userPrefs.saveUser(email)
-                navController.navigate("${Destination.HomeScreen.route}/${email}") {
-                    popUpTo(Destination.LoginScreen.route) { inclusive = true }
+                when {
+                    !userPrefs.userExists(email) -> showDialogUserNotFound = true
+                    !userPrefs.checkPassword(email, password) -> showDialogWrongPassword = true
+                    else -> {
+                        userPrefs.saveUser(email)
+                        navController.navigate("${Destination.HomeScreen.route}/$email") {
+                            popUpTo(Destination.LoginScreen.route) { inclusive = true }
+                        }
+                    }
                 }
             },
             modifier = Modifier

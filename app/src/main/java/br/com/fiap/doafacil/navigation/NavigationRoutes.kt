@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import br.com.fiap.doafacil.repository.UserPreferences
+import br.com.fiap.doafacil.screens.CadastroScreen
 import br.com.fiap.doafacil.screens.DoacaoScreen
 import br.com.fiap.doafacil.screens.ExplorationScreen
 import br.com.fiap.doafacil.screens.HomeScreen
@@ -35,7 +36,7 @@ fun NavigationRoutes() {
             LoginScreen(navController)
         }
         composable(Destination.CadastroScreen.route) {
-            // placeholder
+            CadastroScreen(navController)
         }
         composable(
             route = "${Destination.HomeScreen.route}/{email}",
