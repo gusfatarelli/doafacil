@@ -59,14 +59,33 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import br.com.fiap.doafacil.R
+import br.com.fiap.doafacil.components.Instituicao
+import br.com.fiap.doafacil.components.InstituicaoCardItem
+import br.com.fiap.doafacil.components.Necessidade
+import br.com.fiap.doafacil.components.NecessidadeCardItem
+import br.com.fiap.doafacil.model.PriorityLevel
+import br.com.fiap.doafacil.navigation.Destination
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import br.com.fiap.doafacil.components.CampanhaItem
+import br.com.fiap.doafacil.components.CategoryItem
+import br.com.fiap.doafacil.model.Category
+import br.com.fiap.doafacil.repository.getAllCampanhas
+import br.com.fiap.doafacil.repository.getAllCategories
+import br.com.fiap.doafacil.ui.theme.DoafacilTheme
 
 @Composable
 fun HomeScreen(navController: NavController, email: String?) {
     Surface(modifier = Modifier.fillMaxSize()) {
         Scaffold(
             topBar = { br.com.fiap.doafacil.screens.MyTopAppBar(email!!, navController) },
-            bottomBar = { BottomAppBar() },
+            bottomBar = { MyBottomNavigation() },
             floatingActionButton = {
                 FloatingActionButton(
                     onClick = {},
@@ -94,18 +113,15 @@ fun HomeScreen(navController: NavController, email: String?) {
 @Composable
 fun MyTopAppBar(email: String, navController: NavController) {
 
-    val user = userRespository.getUserByEmail(email)
-
-    val profileBitmap by remember {
-        mutableStateOf<Bitmap>(convertByteArrayToBitmap(
-            user!!.userImage!!)
-        )
-    }
+//    val user = userRespository.getUserByEmail(email)
+//
+//    val profileBitmap by remember {
+//        mutableStateOf<Bitmap>(convertByteArrayToBitmap(
+//            user!!.userImage!!)
+//        )
+//    }
 
     TopAppBar(
-        colors = TopAppBarColors = TopAppBarDefaults.topAppBarColors = (
-                containerColor = Color.Blue
-                ),
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 4.dp),
@@ -141,11 +157,13 @@ fun MyTopAppBar(email: String, navController: NavController) {
                     modifier = Modifier
                         .size(48.dp)
                         .clickable(
-                            onClick = { navController.navigate("profile/${user!!.email}") }
+                            //onClick = { navController.navigate("profile/${user!!.email}") }
+                            onClick = {}
                         )
                 ) {
                     Image(
-                        bitmap = profileBitmap.asImageBitmap(),
+                        //bitmap = profileBitmap.asImageBitmap(),
+                        painter = painterResource(R.drawable.logo_doafacil),
                         contentDescription = "",
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop
@@ -154,7 +172,8 @@ fun MyTopAppBar(email: String, navController: NavController) {
             }
 
             Text(
-                text = "Hello, ${user!!.name}!",
+                //text = "Hello, ${user!!.name}!",
+                text = "Hello João!",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold
@@ -167,8 +186,15 @@ fun MyTopAppBar(email: String, navController: NavController) {
     )
 }
 
+data class BottomNavigationItem(
+    val title: String,
+    val icon: ImageVector
+)
+
+
 @Composable
 fun BottomAppBar() {
+
     val itens = listOf(
         BottomNavigationItem("Home", icon = Icons.Default.Home),
         BottomNavigationItem("Explorar", icon = Icons.Default.Search),
@@ -187,8 +213,7 @@ fun BottomAppBar() {
                         contentDescription = NavigationItem.title,
                         tint = MaterialTheme.colorScheme.primary)
                 },
-                label = {
-                    Text(
+                label = {Text(
                     text = NavigationItem.title,
                     style = MaterialTheme.typography.displaySmall,
                     color = MaterialTheme.colorScheme.primary
@@ -196,11 +221,6 @@ fun BottomAppBar() {
             )
         }
     }
-}
-
-@Composable
-fun BottomNavigationItem(x0: String, icon: ImageVector) {
-    TODO("Not yet implemented")
 }
 
 //TELA DE CONTEÚDO
@@ -211,10 +231,12 @@ fun ContentScreen(modifier: Modifier = Modifier, navController: NavController) {
     //Variavel da lista de necessidades
     val categories = getAllCategories()
     //Variavel da lista de campanhas
-    val recipes = getAllRecipes()
+    val campanhas = getAllCampanhas()
+
 
     Text(
-        text = "Olá, $user!!.name",
+        //text = "Olá, $user!!.name",
+        text = "Oi, João!",
         color = MaterialTheme.colorScheme.primary,
         style = MaterialTheme.typography.displayLarge
     )
@@ -226,7 +248,8 @@ fun ContentScreen(modifier: Modifier = Modifier, navController: NavController) {
         OutlinedTextField(
             value = "",
             onValueChange = {},
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 8.dp)
                 .fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
             colors = OutlinedTextFieldDefaults.colors(
@@ -255,28 +278,20 @@ fun ContentScreen(modifier: Modifier = Modifier, navController: NavController) {
         )
 
         // Lista de Categorias
-        LazyRow(
-            contentPadding = PaddingValues(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.padding(vertical = 8.dp)
-        ) {
-            items(categories) { category ->
-                CategoryItem(category = category, onClick = {
-                    navController.navigate(route = Destination.CategoryRecipeScreen
-                        .createRoute(categoryId = category.id))
-                })
+        var selectedCategory by remember { mutableStateOf<Category?>(getAllCategories().first()) }
+
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            items(getAllCategories()) { category ->
+                CategoryItem(
+                    category = category,
+                    isSelected = selectedCategory?.id == category.id,
+                    onCategoryClick = { selectedCategory = it }
+                )
             }
         }
 
         Spacer(Modifier.height(16.dp))
-        Card(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp, horizontal = 16.dp).height(116.dp)) {
-            Image(
-                painter = painterResource(R.drawable.speedcard),
-                contentDescription = "",
-                modifier = Modifier.fillMaxWidth(),
-                contentScale = ContentScale.FillBounds,
-            )
-        }
+
         Text(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             text = "Necessidades Urgentes",
@@ -285,16 +300,28 @@ fun ContentScreen(modifier: Modifier = Modifier, navController: NavController) {
         )
 
         // Lista de Necessidades
-        LazyRow(
-            contentPadding = PaddingValues(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.padding(vertical = 8.dp)
-        ) {
-            items(categories) { category ->
-                CategoryItem(category = category, onClick = {
-                    navController.navigate(route = Destination.CategoryRecipeScreen
-                        .createRoute(categoryId = category.id))
-                })
+
+        val necessidades = listOf(
+            Necessidade(titulo = "Cestas Básicas 🧺", instituicaoNome = Instituicao(nome = "ONG Vida Nova",
+                categorias = "",
+                distancia = ""), prioridade = PriorityLevel.URGENTE, progress = 80, quantity = 20),
+
+            Necessidade(titulo = "Fraldas G 👶", instituicaoNome = Instituicao(nome = "Abrigo Esperança",
+                categorias = "",
+                distancia = ""), prioridade = PriorityLevel.URGENTE, progress = 60, quantity = 40),
+
+            Necessidade(titulo = "Agasalhos", instituicaoNome = Instituicao(nome = "ONG Vida Nova",
+                categorias = "",
+                distancia = ""), prioridade = PriorityLevel.URGENTE, progress = 45, quantity = 55),
+
+            Necessidade(titulo = "Leite em Pó", instituicaoNome = Instituicao(nome = "Abrigo Feliz",
+                categorias = "",
+                distancia = ""), prioridade = PriorityLevel.NORMAL,  progress = 30, quantity = 70)
+        )
+
+        LazyRow {
+            items(necessidades) { necessidade ->
+                NecessidadeCardItem(necessidade = necessidade)
             }
         }
 
@@ -302,122 +329,20 @@ fun ContentScreen(modifier: Modifier = Modifier, navController: NavController) {
             text = "Instituições Próximas",
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
         )
 
         Column() {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                shape = RoundedCornerShape(16.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .padding(12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Ícone da casa
-                    Icon(
-                        imageVector = Icons.Default.Home,
-                        contentDescription = "",
-                        modifier = Modifier
-                            .size(56.dp)
-                            .background(Color(0xFFFFF3E0), RoundedCornerShape(12.dp))
-                            .padding(8.dp),
-                        tint = Color(0xFFE65100)
-                    )
+            val instituicoes = listOf(
+                Instituicao(nome = "Abrigo Feliz", categorias = "Crianças | Roupas | Alimentos", distancia = "3.2 km", prioridade = PriorityLevel.URGENTE),
+                Instituicao(nome = "Banco de Alimentos SP", categorias = "Fome | Alimentos", distancia = "4.1 km"),
+            )
 
-                    Spacer(modifier = Modifier.width(12.dp))
-
-                    // Coluna central
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = "Abrigo Feliz",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp
-                        )
-                        Text(
-                            text = "Crianças | Roupas | Alimentos",
-                            fontSize = 13.sp,
-                            color = Color.Gray
-                        )
-
-                        Spacer(modifier = Modifier.height(6.dp))
-
-                        // Badges
-                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                            // Badge Verificado
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .background(Color(0xFF4CAF50), RoundedCornerShape(50))
-                                    .padding(horizontal = 8.dp, vertical = 3.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.CheckCircle,
-                                    contentDescription = "",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(12.dp)
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(text = "Verificado", color = Color.White, fontSize = 11.sp)
-                            }
-
-                            // Badge Urgente
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .background(Color(0xFFFFE0E0), RoundedCornerShape(50))
-                                    .padding(horizontal = 8.dp, vertical = 3.dp)
-                            ) {
-                                Text(text = "Urgente", color = Color(0xFFE53935), fontSize = 11.sp)
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Icon(
-                                    imageVector = Icons.Default.ShoppingBag,
-                                    contentDescription = "",
-                                    tint = Color(0xFF1565C0),
-                                    modifier = Modifier.size(12.dp)
-                                )
-                            }
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    // Coluna direita: distância + ações
-                    Column(horizontalAlignment = Alignment.End) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.LocationOn,
-                                contentDescription = "",
-                                tint = Color.Gray,
-                                modifier = Modifier.size(14.dp)
-                            )
-                            Text(text = "3.2 km", fontSize = 12.sp, color = Color.Gray)
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Icon(
-                                imageVector = Icons.Default.Directions,
-                                contentDescription = "Como chegar",
-                                tint = Color.Gray,
-                                modifier = Modifier.size(22.dp)
-                            )
-                            Icon(
-                                imageVector = Icons.Default.Home,
-                                contentDescription = "Ver abrigo",
-                                tint = Color.Gray,
-                                modifier = Modifier.size(22.dp)
-                            )
-                        }
-                    }
-                }
+            instituicoes.forEach { instituicaoIt ->
+                InstituicaoCardItem(instituicao = instituicaoIt)
             }
         }
+
 
         Text(
             text = "Campanhas em Destaque",
@@ -426,16 +351,22 @@ fun ContentScreen(modifier: Modifier = Modifier, navController: NavController) {
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
         )
 
-        LazyRow(contentPadding = PaddingValues(
-            vertical = 10.dp,
-            horizontal = 16.dp
-        ),
-            horizontalArrangement = Arrangement.spacedBy(9.dp)
-        ) {
-            items(recipes) {recipe ->
-                RecipeItem(recipe)
+        LazyRow {
+            items(getAllCampanhas()) { campanha ->
+                CampanhaItem(
+                    campanha = campanha,
+                    onSaberMaisClick = { /* TODO: navegar para detalhe */ }
+                )
             }
         }
 
+    }
+}
+
+@Preview
+@Composable
+private fun ContentScreenPreview() {
+    DoafacilTheme {
+        ContentScreen(navController = rememberNavController())
     }
 }

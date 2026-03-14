@@ -41,7 +41,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import br.com.fiap.doafacil.R
+import br.com.fiap.doafacil.navigation.Destination
 import br.com.fiap.doafacil.ui.theme.DarkBlue
 import br.com.fiap.doafacil.ui.theme.DoafacilTheme
 
@@ -407,10 +410,10 @@ fun SignupUserForm(navController: NavController?, profileImage: Bitmap) {
     }
 }
 
-@Preview
-@Composable
-private fun SignupUserFormPreviwe() {
-    DoafacilTheme{
-        SignupUserForm()
-    }
-}
+//@Preview
+//@Composable
+//private fun SignupUserFormPreviwe() {
+//    DoafacilTheme{
+//        SignupUserForm(rememberNavController())
+//    }
+//}
