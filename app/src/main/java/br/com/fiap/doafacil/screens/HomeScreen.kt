@@ -186,148 +186,118 @@ fun MyTopAppBar(email: String, navController: NavController) {
     )
 }
 
-data class BottomNavigationItem(
-    val title: String,
-    val icon: ImageVector
-)
-
 //TELA DE CONTEÚDO
 
 @Composable
 fun ContentScreen(modifier: Modifier = Modifier, navController: NavController) {
 
-    //Variavel da lista de necessidades
-    val categories = getAllCategories()
-    //Variavel da lista de campanhas
-    val campanhas = getAllCampanhas()
-
-
-    Text(
-        //text = "Olá, $user!!.name",
-        text = "Oi, João!",
-        color = MaterialTheme.colorScheme.primary,
-        style = MaterialTheme.typography.displayLarge
+    val necessidades = listOf(
+        Necessidade(titulo = "Cestas Básicas 🧺", instituicaoNome = Instituicao(nome = "ONG Vida Nova", categorias = "", distancia = ""), prioridade = PriorityLevel.URGENTE, progress = 80, quantity = 20),
+        Necessidade(titulo = "Fraldas G 👶", instituicaoNome = Instituicao(nome = "Abrigo Esperança", categorias = "", distancia = ""), prioridade = PriorityLevel.URGENTE, progress = 60, quantity = 40),
+        Necessidade(titulo = "Agasalhos", instituicaoNome = Instituicao(nome = "ONG Vida Nova", categorias = "", distancia = ""), prioridade = PriorityLevel.URGENTE, progress = 45, quantity = 55),
+        Necessidade(titulo = "Leite em Pó", instituicaoNome = Instituicao(nome = "Abrigo Feliz", categorias = "", distancia = ""), prioridade = PriorityLevel.NORMAL, progress = 30, quantity = 70)
     )
 
-    Column(modifier = modifier
-        .fillMaxSize()
-        .padding(horizontal = 0.dp)
-    ) {
-        OutlinedTextField(
-            value = "",
-            onValueChange = {},
-            modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-                .fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = Color.Transparent,
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                //focusedContainerColor = Color.LightGray,
-                unfocusedContainerColor = Color.LightGray
-            ),
-            label = {
-                Text(
-                    text = "Buscar instituições ou causas.",
-                    style = MaterialTheme.typography.labelSmall
-                )
-            },
-            trailingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "Search",
-                    tint = MaterialTheme.colorScheme.tertiary
-                )
-            },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Search
+    val instituicoes = listOf(
+        Instituicao(nome = "Abrigo Feliz", categorias = "Crianças | Roupas | Alimentos", distancia = "3.2 km", prioridade = PriorityLevel.URGENTE),
+        Instituicao(nome = "Banco de Alimentos SP", categorias = "Fome | Alimentos", distancia = "4.1 km"),
+    )
+
+    var selectedCategory by remember { mutableStateOf<Category?>(getAllCategories().first()) }
+
+    LazyColumn(modifier = modifier.fillMaxSize()) {
+
+        // Search bar
+        item {
+            OutlinedTextField(
+                value = "",
+                onValueChange = {},
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedBorderColor = Color.Transparent,
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedContainerColor = Color.LightGray
+                ),
+                label = {
+                    Text(text = "Buscar instituições ou causas.", style = MaterialTheme.typography.labelSmall)
+                },
+                trailingIcon = {
+                    Icon(imageVector = Icons.Default.Search, contentDescription = "Search", tint = MaterialTheme.colorScheme.tertiary)
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Search)
             )
-        )
-
-        // Lista de Categorias
-        var selectedCategory by remember { mutableStateOf<Category?>(getAllCategories().first()) }
-
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(getAllCategories()) { category ->
-                CategoryItem(
-                    category = category,
-                    isSelected = selectedCategory?.id == category.id,
-                    onCategoryClick = { selectedCategory = it }
-                )
-            }
         }
 
-        Spacer(Modifier.height(16.dp))
-
-        Text(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-            text = "Necessidades Urgentes",
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.primary
-        )
-
-        // Lista de Necessidades
-
-        val necessidades = listOf(
-            Necessidade(titulo = "Cestas Básicas 🧺", instituicaoNome = Instituicao(nome = "ONG Vida Nova",
-                categorias = "",
-                distancia = ""), prioridade = PriorityLevel.URGENTE, progress = 80, quantity = 20),
-
-            Necessidade(titulo = "Fraldas G 👶", instituicaoNome = Instituicao(nome = "Abrigo Esperança",
-                categorias = "",
-                distancia = ""), prioridade = PriorityLevel.URGENTE, progress = 60, quantity = 40),
-
-            Necessidade(titulo = "Agasalhos", instituicaoNome = Instituicao(nome = "ONG Vida Nova",
-                categorias = "",
-                distancia = ""), prioridade = PriorityLevel.URGENTE, progress = 45, quantity = 55),
-
-            Necessidade(titulo = "Leite em Pó", instituicaoNome = Instituicao(nome = "Abrigo Feliz",
-                categorias = "",
-                distancia = ""), prioridade = PriorityLevel.NORMAL,  progress = 30, quantity = 70)
-        )
-
-        LazyRow {
-            items(necessidades) { necessidade ->
-                NecessidadeCardItem(necessidade = necessidade)
-            }
-        }
-
-        Text(
-            text = "Instituições Próximas",
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
-        )
-
-        Column() {
-            val instituicoes = listOf(
-                Instituicao(nome = "Abrigo Feliz", categorias = "Crianças | Roupas | Alimentos", distancia = "3.2 km", prioridade = PriorityLevel.URGENTE),
-                Instituicao(nome = "Banco de Alimentos SP", categorias = "Fome | Alimentos", distancia = "4.1 km"),
+        // Categorias
+        item {
+            CategoryLazyRow(
+                selectedCategory = selectedCategory,
+                onCategoryClick = { selectedCategory = it }
             )
+        }
 
-            instituicoes.forEach { instituicaoIt ->
-                InstituicaoCardItem(instituicao = instituicaoIt)
+        item { Spacer(Modifier.height(16.dp)) }
+
+        // Título Necessidades
+        item {
+            Text(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                text = "Necessidades Urgentes",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+
+        // LazyRow de Necessidades
+        item {
+            LazyRow {
+                items(necessidades) { necessidade ->
+                    NecessidadeCardItem(necessidade = necessidade)
+                }
             }
         }
 
+        // Título Instituições
+        item {
+            Text(
+                text = "Instituições Próximas",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
+            )
+        }
 
-        Text(
-            text = "Campanhas em Destaque",
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
-        )
+        // Lista de Instituições
+        items(instituicoes) { instituicao ->
+            InstituicaoCardItem(instituicao = instituicao)
+        }
 
-        LazyRow {
-            items(getAllCampanhas()) { campanha ->
-                CampanhaItem(
-                    campanha = campanha,
-                    onSaberMaisClick = { /* TODO: navegar para detalhe */ }
-                )
+        // Título Campanhas
+        item {
+            Text(
+                text = "Campanhas em Destaque",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+            )
+        }
+
+        // LazyRow de Campanhas
+        item {
+            LazyRow {
+                items(getAllCampanhas()) { campanha ->
+                    CampanhaItem(
+                        campanha = campanha,
+                        onSaberMaisClick = { }
+                    )
+                }
             }
         }
 
+        item { Spacer(Modifier.height(16.dp)) }
     }
 }
 
