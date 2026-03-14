@@ -41,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -54,6 +55,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import br.com.fiap.doafacil.R
 import br.com.fiap.doafacil.navigation.Destination
+import br.com.fiap.doafacil.repository.UserPreferences
 import br.com.fiap.doafacil.ui.theme.DarkBlue
 import br.com.fiap.doafacil.ui.theme.DoafacilTheme
 
@@ -119,6 +121,9 @@ fun LoginScreen(navController: NavController) {
 // Caixa do e-mail
 @Composable
 fun LoginForm(modifier: Modifier = Modifier, navController: NavController) {
+
+    val context = LocalContext.current
+    val userPrefs = remember { UserPreferences(context) }
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -190,8 +195,14 @@ fun LoginForm(modifier: Modifier = Modifier, navController: NavController) {
             }
         )
         Spacer(modifier = Modifier.height(32.dp))
+        // Botão entrar
         Button(
-            onClick = { navController.navigate("${Destination.HomeScreen.route}/${email}") },
+            onClick = {
+                userPrefs.saveUser(email)
+                navController.navigate("${Destination.HomeScreen.route}/${email}") {
+                    popUpTo(Destination.LoginScreen.route) { inclusive = true }
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp),
@@ -207,7 +218,12 @@ fun LoginForm(modifier: Modifier = Modifier, navController: NavController) {
 
         // Botão entrar como convidado
         Button(
-            onClick = { navController.navigate("${Destination.HomeScreen.route}/convidado") },
+            onClick = {
+                userPrefs.saveUser("convidado")
+                navController.navigate("${Destination.HomeScreen.route}/convidado") {
+                    popUpTo(Destination.LoginScreen.route) { inclusive = true }
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp),

@@ -2,6 +2,7 @@ package br.com.fiap.doafacil.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -26,9 +27,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 
 import br.com.fiap.doafacil.R
+import br.com.fiap.doafacil.navigation.Destination
+import br.com.fiap.doafacil.repository.UserPreferences
 import br.com.fiap.doafacil.ui.theme.LightGreen
 
 
@@ -41,6 +45,10 @@ val SuccessGreen = Color(0xFF4CAF50)
 
 @Composable
 fun ProfileScreen(navController: NavController) {
+    val context = LocalContext.current
+    val userPrefs = remember { UserPreferences(context) }
+
+    val email = userPrefs.getEmail()
     val scrollState = rememberScrollState()
 
     Scaffold(
@@ -103,8 +111,17 @@ fun ProfileScreen(navController: NavController) {
                         }
 
                         Spacer(modifier = Modifier.height(12.dp))
-                        Text("João Silva", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1D212E))
-                        Text("joao.silva@email.com", color = Color.Gray, fontSize = 14.sp)
+
+                        Text(
+                            text = if (email == "convidado") "Convidado" else email,
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = if (email == "convidado") "" else email,
+                            color = Color.Gray,
+                            fontSize = 14.sp
+                        )
 
                         Spacer(modifier = Modifier.height(12.dp))
                         OutlinedButton(
@@ -124,7 +141,7 @@ fun ProfileScreen(navController: NavController) {
                         AchievementsRow()
 
                         Spacer(modifier = Modifier.height(24.dp))
-                        MenuOptionsSection()
+                        MenuOptionsSection(navController)
 
                         Spacer(modifier = Modifier.height(20.dp))
                     }
@@ -210,7 +227,11 @@ fun AchievementsRow() {
 }
 
 @Composable
-fun MenuOptionsSection() {
+fun MenuOptionsSection(navController: NavController) {
+
+    val context = LocalContext.current
+    val userPrefs = remember { UserPreferences(context) }
+
     val options = listOf(
         "Histórico de Doações" to Icons.Default.BarChart,
         "Instituições Favoritas" to Icons.Default.StarBorder,
@@ -224,7 +245,14 @@ fun MenuOptionsSection() {
             border = CardDefaults.outlinedCardBorder().copy(width = 0.5.dp)
         ) {
             Row(
-                modifier = Modifier.padding(14.dp).fillMaxWidth(),
+                modifier = Modifier.padding(14.dp).fillMaxWidth().clickable {
+                    if (title == "Sair da Conta") {
+                        userPrefs.clearUser()
+                        navController.navigate(Destination.LoginScreen.route) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    }
+                },
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(icon, null, modifier = Modifier.size(20.dp), tint = Color.Gray)

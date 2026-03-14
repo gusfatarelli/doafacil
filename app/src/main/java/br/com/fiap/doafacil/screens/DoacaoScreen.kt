@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,6 +49,7 @@ import br.com.fiap.doafacil.R
 import br.com.fiap.doafacil.components.DoacaoItemCard
 import br.com.fiap.doafacil.components.OngCardItem
 import br.com.fiap.doafacil.model.Category
+import br.com.fiap.doafacil.repository.UserPreferences
 import br.com.fiap.doafacil.repository.getAllCategories
 import br.com.fiap.doafacil.repository.getAllDoacaoItens
 import br.com.fiap.doafacil.repository.getAllOngs
@@ -84,8 +86,13 @@ fun DoacaoScreen(navController: NavController, modifier: Modifier = Modifier) {
 
 @Composable
 fun ContentScreenDonation(modifier: Modifier = Modifier, navController: NavController) {
+
+    val context = LocalContext.current
+    val userPrefs = remember { UserPreferences(context) }
+
     var itens by remember { mutableStateOf(getAllDoacaoItens()) }
-    var tipoDoacao by remember { mutableStateOf("itens") } //
+    var tipoDoacao by remember { mutableStateOf("itens") }
+    var tipoMetodo by remember { mutableStateOf(userPrefs.getMetodoEntrega()) }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -122,8 +129,17 @@ fun ContentScreenDonation(modifier: Modifier = Modifier, navController: NavContr
             }
 
             DonationConfirmations(
-                tipoMetodo = "Levar ao Local",
-                onTipoChange = {}
+                tipoMetodo = tipoMetodo,
+                onTipoChange = {
+                    tipoMetodo = it
+                    userPrefs.saveMetodoEntrega(it)
+                },
+                onGerarResumo = {
+                    val selecionados = itens
+                        .filter { it.selecionado }
+                        .joinToString(";") { "${it.nome}:${it.quantidade}" }
+                    userPrefs.saveDoacaoItens(selecionados)
+                }
             )
 
         }
@@ -306,7 +322,7 @@ fun DonationConfirmations(
             }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(2.dp))
 
         Text(
             text = "Rua das Flores, 123 | Seg-Sex, 9h-17h",
