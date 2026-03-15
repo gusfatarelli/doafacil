@@ -41,7 +41,6 @@ fun OngCardItem(
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
 
-            // Header
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Image(
                     painter = painterResource(id = ong.image),

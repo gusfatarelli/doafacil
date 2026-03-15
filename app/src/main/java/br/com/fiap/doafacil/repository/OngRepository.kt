@@ -11,7 +11,7 @@ fun getAllOngs() = listOf(
         cidade = "Osasco - SP",
         categorias = "Crianças | Roupas | Alimentos",
         urgencias = listOf("Agasalhos P & M", "Fraldas G"),
-        image = R.drawable.no_photo
+        image = R.drawable.family
     ),
     Ong(
         id = 2000,
@@ -21,7 +21,7 @@ fun getAllOngs() = listOf(
         categorias = "Fome | Alimentos",
         descricao = "Alimentos não perecíveis",
         progressDoacao = 85,
-        image = R.drawable.no_photo
+        image = R.drawable.rice
     ),
     Ong(
         id = 3000,
@@ -30,7 +30,7 @@ fun getAllOngs() = listOf(
         cidade = "Osasco - SP",
         categorias = "Roupas | Calçados",
         urgencias = listOf("Agasalhos Adulto"),
-        image = R.drawable.no_photo
+        image = R.drawable.clothes
     ),
     Ong(
         id = 4000,
@@ -39,7 +39,7 @@ fun getAllOngs() = listOf(
         cidade = "Osasco - SP",
         categorias = "Idosos | Saúde | Higiene",
         urgencias = listOf("Fraldas Adulto", "Remédios"),
-        image = R.drawable.no_photo
+        image = R.drawable.old_people
     ),
     Ong(
         id = 5000,
@@ -49,6 +49,6 @@ fun getAllOngs() = listOf(
         categorias = "Crianças | Educação",
         descricao = "Material escolar e brinquedos",
         progressDoacao = 62,
-        image = R.drawable.no_photo
+        image = R.drawable.baby
     )
 )
