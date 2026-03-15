@@ -2,18 +2,20 @@ package br.com.fiap.doafacil.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -23,6 +25,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -44,7 +47,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -55,6 +57,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import br.com.fiap.doafacil.R
 import br.com.fiap.doafacil.components.CampanhaItem
+import br.com.fiap.doafacil.components.CategoryItem
 import br.com.fiap.doafacil.components.Instituicao
 import br.com.fiap.doafacil.components.InstituicaoCardItem
 import br.com.fiap.doafacil.components.Necessidade
@@ -64,38 +67,38 @@ import br.com.fiap.doafacil.model.PriorityLevel
 import br.com.fiap.doafacil.repository.UserPreferences
 import br.com.fiap.doafacil.repository.getAllCampanhas
 import br.com.fiap.doafacil.repository.getAllCategories
-import br.com.fiap.doafacil.ui.theme.BluePrimary
-import br.com.fiap.doafacil.ui.theme.DarkBlue
-import br.com.fiap.doafacil.ui.theme.DeepGrey
 import br.com.fiap.doafacil.ui.theme.DoafacilTheme
-import br.com.fiap.doafacil.ui.theme.GreenBackground
 import br.com.fiap.doafacil.ui.theme.GreyText
 import br.com.fiap.doafacil.ui.theme.LightGreen
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TELA PRINCIPAL
+// ─────────────────────────────────────────────────────────────────────────────
 
 @Composable
 fun HomeScreen(navController: NavController, email: String?) {
     val context = LocalContext.current
     val userPrefs = remember { UserPreferences(context) }
-    val nome = userPrefs.getName().ifEmpty { email ?: "" }
+    val nome = userPrefs.getName()
+        .takeIf { it.isNotBlank() }
+        ?: email?.substringBefore("@")
+        ?: ""
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color.White
+        color = MaterialTheme.colorScheme.background
     ) {
         Scaffold(
-            containerColor = Color.White,
+            containerColor = Color.Transparent,
             bottomBar = { MyBottomNavigation(navController = navController) },
             floatingActionButton = {
                 FloatingActionButton(
                     onClick = {},
                     shape = CircleShape,
-                    containerColor = LightGreen
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    contentColor = MaterialTheme.colorScheme.onSecondary
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Novo",
-                        tint = DarkBlue
-                    )
+                    Icon(imageVector = Icons.Default.Add, contentDescription = "Novo")
                 }
             }
         ) { paddingValues ->
@@ -113,31 +116,31 @@ fun HomeHeader(nome: String) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(BluePrimary)
-            .padding(horizontal = 20.dp, vertical = 16.dp)
+            .background(MaterialTheme.colorScheme.primary)
+            .padding(horizontal = 20.dp, vertical = 4.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-
+            // Logo + nome do app
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Image(
                     painter = painterResource(R.drawable.logo_doafacil),
-                    contentDescription = "Logo",
-                    modifier = Modifier.size(36.dp)
+                    contentDescription = "Logo DoaFácil",
+                    modifier = Modifier.size(80.dp)
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 Text(
-                    text = stringResource(R.string.app_name),
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp
+                    text = "DoaFácil",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontWeight = FontWeight.Bold
                 )
             }
 
-
+            // Notificações + avatar
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -145,24 +148,27 @@ fun HomeHeader(nome: String) {
                 Icon(
                     imageVector = Icons.Default.Notifications,
                     contentDescription = "Notificações",
-                    tint = Color.White,
-                    modifier = Modifier.size(24.dp)
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.size(22.dp)
                 )
-                Image(
-                    painter = painterResource(R.drawable.boy),
-                    contentDescription = "Avatar",
-                    contentScale = ContentScale.Crop,
+                Box(
                     modifier = Modifier
-                        .size(36.dp)
+                        .size(34.dp)
                         .clip(CircleShape)
-                        .border( 1.dp, Color.White, CircleShape )
-                )
+                        .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.15f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = "Avatar",
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
             }
         }
     }
 }
-
-// ── SAUDAÇÃO ────────────────────────────────────────────────────────────────
 
 @Composable
 fun HomeSaudacao(nome: String) {
@@ -172,21 +178,19 @@ fun HomeSaudacao(nome: String) {
             .padding(horizontal = 20.dp, vertical = 16.dp)
     ) {
         Text(
-            text = "Olá, ${nome.replaceFirstChar { it.uppercase() }}! 👋",
+            text = "Olá, ${nome.replaceFirstChar { it.uppercase() }}! 😊",
+            style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
-            fontSize = 22.sp,
-            color = DarkBlue
+            color = MaterialTheme.colorScheme.onBackground
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
             text = "O que você quer doar hoje?",
-            fontSize = 14.sp,
+            style = MaterialTheme.typography.bodyMedium,
             color = GreyText
         )
     }
 }
-
-// ── SEARCH BAR ──────────────────────────────────────────────────────────────
 
 @Composable
 fun HomeSearchBar() {
@@ -200,47 +204,44 @@ fun HomeSearchBar() {
             .padding(horizontal = 16.dp, vertical = 4.dp),
         shape = RoundedCornerShape(50.dp),
         colors = OutlinedTextFieldDefaults.colors(
-            unfocusedBorderColor = Color.Transparent,
-            focusedBorderColor = BluePrimary,
-            unfocusedContainerColor = Color.White,
-            focusedContainerColor = Color.White
+            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+            focusedBorderColor   = MaterialTheme.colorScheme.primary,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            focusedContainerColor   = MaterialTheme.colorScheme.surface
         ),
         placeholder = {
             Text(
-                text = "Buscar instituições ou causas...",
-                style = MaterialTheme.typography.labelSmall,
+                text = "Buscar instituições ou causas",
+                style = MaterialTheme.typography.bodyMedium,
                 color = GreyText
             )
         },
-        trailingIcon = {
+        leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = "Buscar",
-                tint = BluePrimary
+                tint = GreyText,
+                modifier = Modifier.size(20.dp)
             )
         },
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Text,
-            imeAction = ImeAction.Search
+            imeAction    = ImeAction.Search
         ),
         singleLine = true
     )
 }
 
-// ── TÍTULO DE SEÇÃO ─────────────────────────────────────────────────────────
-
 @Composable
 fun SectionTitle(title: String, modifier: Modifier = Modifier) {
     Text(
         text = title,
+        style = MaterialTheme.typography.titleSmall,
         fontWeight = FontWeight.Bold,
-        fontSize = 16.sp,
-        color = DarkBlue,
+        color = MaterialTheme.colorScheme.onBackground,
         modifier = modifier.padding(horizontal = 20.dp, vertical = 10.dp)
     )
 }
-
-// ── CONTEÚDO PRINCIPAL ───────────────────────────────────────────────────────
 
 @Composable
 fun ContentScreen(
@@ -251,46 +252,36 @@ fun ContentScreen(
     val necessidades = listOf(
         Necessidade(
             titulo = "Cestas Básicas 🧺",
-            instituicaoNome = Instituicao(nome = "ONG Vida Nova", categorias = "", distancia = ""),
+            instituicaoNome = Instituicao("ONG Vida Nova", "", ""),
             prioridade = PriorityLevel.URGENTE, progress = 80, quantity = 20
         ),
         Necessidade(
             titulo = "Fraldas G 👶",
-            instituicaoNome = Instituicao(nome = "Abrigo Esperança", categorias = "", distancia = ""),
+            instituicaoNome = Instituicao("Abrigo Esperança", "", ""),
             prioridade = PriorityLevel.URGENTE, progress = 60, quantity = 40
         ),
         Necessidade(
-            titulo = "Agasalhos",
-            instituicaoNome = Instituicao(nome = "ONG Vida Nova", categorias = "", distancia = ""),
+            titulo = "Agasalhos 🧥",
+            instituicaoNome = Instituicao("ONG Vida Nova", "", ""),
             prioridade = PriorityLevel.URGENTE, progress = 45, quantity = 55
         ),
         Necessidade(
-            titulo = "Leite em Pó",
-            instituicaoNome = Instituicao(nome = "Abrigo Feliz", categorias = "", distancia = ""),
+            titulo = "Leite em Pó 🥛",
+            instituicaoNome = Instituicao("Abrigo Feliz", "", ""),
             prioridade = PriorityLevel.NORMAL, progress = 30, quantity = 70
         )
     )
 
     val instituicoes = listOf(
-        Instituicao(
-            nome = "Abrigo Feliz",
-            categorias = "Crianças | Roupas | Alimentos",
-            distancia = "3.2 km",
-            prioridade = PriorityLevel.URGENTE
-        ),
-        Instituicao(
-            nome = "Banco de Alimentos SP",
-            categorias = "Fome | Alimentos",
-            distancia = "4.1 km"
-        )
+        Instituicao("Abrigo Feliz", "Crianças | Roupas | Alimentos", "3.2 km", PriorityLevel.URGENTE),
+        Instituicao("Banco de Alimentos SP", "Fome | Alimentos", "4.1 km")
     )
 
     var selectedCategory by remember { mutableStateOf<Category?>(getAllCategories().first()) }
 
-    LazyColumn(
-        modifier = modifier.fillMaxSize()
-    ) {
-        // Header azul
+    LazyColumn(modifier = modifier.fillMaxSize()) {
+
+        // Header
         item { HomeHeader(nome = nome) }
 
         // Saudação
@@ -299,17 +290,17 @@ fun ContentScreen(
         // Search bar
         item { HomeSearchBar() }
 
-        item { Spacer(Modifier.height(4.dp)) }
+        item { Spacer(Modifier.height(6.dp)) }
 
         // Categorias
         item {
             SectionTitle("Categorias")
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(horizontal = 16.dp)
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
             ) {
                 items(getAllCategories().filter { it.name.isNotEmpty() }) { category ->
-                    br.com.fiap.doafacil.components.CategoryItem(
+                    CategoryItem(
                         category = category,
                         isSelected = selectedCategory?.id == category.id,
                         onCategoryClick = { selectedCategory = it }
@@ -321,12 +312,12 @@ fun ContentScreen(
         item { Spacer(Modifier.height(4.dp)) }
 
         // Necessidades Urgentes
-        item { SectionTitle("Necessidades Urgentes") }
+        item { SectionTitle("Necessidades Urgentes 🔥") }
 
         item {
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(0.dp),
-                modifier = Modifier.padding(horizontal = 8.dp)
+                modifier = Modifier.padding(horizontal = 10.dp)
             ) {
                 items(necessidades) { necessidade ->
                     NecessidadeCardItem(necessidade = necessidade)
@@ -338,14 +329,11 @@ fun ContentScreen(
         item { SectionTitle("Instituições Próximas 📍") }
 
         items(instituicoes) { instituicao ->
-            InstituicaoCardItem(
-                instituicao = instituicao,
-                modifier = Modifier.padding(horizontal = 8.dp)
-            )
+            InstituicaoCardItem(instituicao = instituicao)
         }
 
         // Campanhas em Destaque
-        item { SectionTitle("Campanhas em Destaque") }
+        item { SectionTitle("Campanhas em Destaque ✨") }
 
         item {
             LazyRow(
@@ -353,10 +341,7 @@ fun ContentScreen(
                 modifier = Modifier.padding(horizontal = 8.dp)
             ) {
                 items(getAllCampanhas()) { campanha ->
-                    CampanhaItem(
-                        campanha = campanha,
-                        onSaberMaisClick = {}
-                    )
+                    CampanhaItem(campanha = campanha, onSaberMaisClick = {})
                 }
             }
         }
@@ -365,10 +350,10 @@ fun ContentScreen(
     }
 }
 
-@Preview
+@Preview(showSystemUi = true)
 @Composable
-private fun ContentScreenPreview() {
+private fun HomeScreenPreview() {
     DoafacilTheme {
-        ContentScreen(navController = rememberNavController())
+        HomeScreen(navController = rememberNavController(), email = "joao@exemplo.com")
     }
 }

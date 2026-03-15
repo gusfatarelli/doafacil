@@ -1,7 +1,6 @@
 package br.com.fiap.doafacil.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.fiap.doafacil.model.PriorityLevel
 import br.com.fiap.doafacil.ui.theme.DarkBlue
-import br.com.fiap.doafacil.ui.theme.DeepGrey
 import br.com.fiap.doafacil.ui.theme.GreyText
 import br.com.fiap.doafacil.ui.theme.LightGreen
 
@@ -44,78 +43,104 @@ fun NecessidadeCardItem(
 ) {
     Card(
         modifier = modifier
-            .width(180.dp)
-            .padding(8.dp)
-            .border( 1.dp, Color.LightGray, RoundedCornerShape(16.dp)
-            ),
+            // largura FIXA igual para todos os cards
+            .width(160.dp)
+            .padding(horizontal = 6.dp, vertical = 4.dp),
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
     ) {
         Column(
-            modifier = Modifier.padding(12.dp)
+            modifier = Modifier
+                .padding(12.dp)
+                // altura mínima para garantir uniformidade
+                .height(148.dp),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = necessidade.titulo, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-            Text(text = necessidade.instituicaoNome.nome, fontSize = 13.sp, color = DarkBlue)
-
-            Spacer(modifier = Modifier.height(8.dp))
+            // Título + instituição
+            Column {
+                Text(
+                    text = necessidade.titulo,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                    lineHeight = 20.sp,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 2
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = necessidade.instituicaoNome.nome,
+                    fontSize = 11.sp,
+                    color = GreyText,
+                    maxLines = 1
+                )
+            }
 
             // Badge prioridade
             if (necessidade.prioridade == PriorityLevel.URGENTE) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-                        .background(Color(0xFFFFE0E0), RoundedCornerShape(50))
-                        .padding(horizontal = 8.dp, vertical = 3.dp)
+                        .background(Color(0xFFFFE5E5), RoundedCornerShape(50))
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
-                    Text(text = "🔥", fontSize = 11.sp)
+                    Text(text = "🔥", fontSize = 10.sp)
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = necessidade.prioridade.description.uppercase(),
-                        color = Color(0xFFE53935),
-                        fontSize = 11.sp,
+                        text = "URGENTE",
+                        color = Color(0xFFD32F2F),
+                        fontSize = 10.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }
+            } else {
+                // placeholder invisível para manter altura igual nos cards normais
+                Spacer(modifier = Modifier.height(24.dp))
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Barra de progresso
-            val progressFraction = necessidade.progress / 100f
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(8.dp)
-                    .background(Color.White, RoundedCornerShape(50))
-                    .border( 1.dp, Color.LightGray, RoundedCornerShape(50))
-            ) {
+            // Barra de progresso + labels
+            Column {
+                val progressFraction = (necessidade.progress / 100f).coerceIn(0f, 1f)
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth(progressFraction)
-                        .height(8.dp)
-                        .background(LightGreen, RoundedCornerShape(50))
-                )
-            }
+                        .fillMaxWidth()
+                        .height(6.dp)
+                        .background(Color(0xFFE0E0E0), RoundedCornerShape(50))
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(progressFraction)
+                            .height(6.dp)
+                            .background(LightGreen, RoundedCornerShape(50))
+                    )
+                }
 
-            Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(4.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(text = "Faltam", fontSize = 12.sp, color = DarkBlue)
-                Text(text = "${necessidade.progress}%", fontSize = 12.sp, fontWeight = FontWeight.Bold)
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                Text(
-                    text = "${necessidade.quantity}/100",
-                    fontSize = 12.sp,
-                    color = DarkBlue
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(text = "Faltam", fontSize = 11.sp, color = GreyText)
+                    Text(
+                        text = "${necessidade.progress}%",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = DarkBlue
+                    )
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Text(
+                        text = "${necessidade.quantity}/100",
+                        fontSize = 11.sp,
+                        color = GreyText
+                    )
+                }
             }
         }
     }
