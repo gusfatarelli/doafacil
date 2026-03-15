@@ -246,7 +246,6 @@ fun MoneyDonationSection(modifier: Modifier = Modifier) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-
         Text(
             text = "Forma de pagamento",
             style = MaterialTheme.typography.titleSmall,
