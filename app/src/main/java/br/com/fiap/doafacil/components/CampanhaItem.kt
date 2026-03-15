@@ -12,23 +12,24 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import br.com.fiap.doafacil.model.Campanha
-import br.com.fiap.doafacil.ui.theme.BluePrimary
-import br.com.fiap.doafacil.ui.theme.GreyText
 import br.com.fiap.doafacil.R
+import br.com.fiap.doafacil.model.Campanha
+import br.com.fiap.doafacil.ui.theme.GreyText
 
 @Composable
-fun CampanhaItem(modifier: Modifier = Modifier.width(320.dp),
+fun CampanhaItem(
+    modifier: Modifier = Modifier.width(300.dp),
     campanha: Campanha,
     onSaberMaisClick: (Campanha) -> Unit = {},
 ) {
     Card(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(8.dp),
+            .padding(horizontal = 6.dp, vertical = 6.dp),
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
     ) {
         Row(
             modifier = Modifier
@@ -36,51 +37,58 @@ fun CampanhaItem(modifier: Modifier = Modifier.width(320.dp),
                 .height(130.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Coluna esquerda com texto e botão
+
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(16.dp),
+                    .padding(14.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
                     text = campanha.titulo,
+                    style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
-                    lineHeight = 22.sp
+                    color = MaterialTheme.colorScheme.onSurface,
+                    lineHeight = MaterialTheme.typography.labelMedium.lineHeight,
+                    maxLines = 3
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
                     text = campanha.descricao,
-                    fontSize = 12.sp,
+                    style = MaterialTheme.typography.bodySmall,
                     color = GreyText,
-                    lineHeight = 18.sp
+                    maxLines = 2
                 )
 
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 OutlinedButton(
                     onClick = { onSaberMaisClick(campanha) },
                     shape = RoundedCornerShape(50),
                     border = ButtonDefaults.outlinedButtonBorder.copy(
-                        brush = androidx.compose.ui.graphics.SolidColor(BluePrimary)
+                        brush = androidx.compose.ui.graphics.SolidColor(
+                            MaterialTheme.colorScheme.primary
+                        )
                     ),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
-                    modifier = Modifier.height(32.dp)
+                    contentPadding = PaddingValues(horizontal = 14.dp, vertical = 0.dp),
+                    modifier = Modifier.height(30.dp)
                 ) {
-                    Text(text = "Saber Mais", color = BluePrimary, fontSize = 12.sp)
+                    Text(
+                        text = "Saber Mais",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
                 }
             }
 
-            // Imagem à direita
             Image(
                 painter = painterResource(id = campanha.image ?: R.drawable.no_photo),
                 contentDescription = campanha.titulo,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .width(130.dp)
+                    .width(120.dp)
                     .fillMaxHeight()
                     .clip(RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp))
             )

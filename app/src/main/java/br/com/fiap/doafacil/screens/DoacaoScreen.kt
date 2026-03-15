@@ -8,12 +8,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,6 +24,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -39,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,35 +53,26 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import br.com.fiap.doafacil.R
 import br.com.fiap.doafacil.components.DoacaoItemCard
-import br.com.fiap.doafacil.components.OngCardItem
-import br.com.fiap.doafacil.model.Category
 import br.com.fiap.doafacil.repository.UserPreferences
-import br.com.fiap.doafacil.repository.getAllCategories
 import br.com.fiap.doafacil.repository.getAllDoacaoItens
-import br.com.fiap.doafacil.repository.getAllOngs
-import br.com.fiap.doafacil.ui.theme.BluePrimary
-import br.com.fiap.doafacil.ui.theme.DarkBlue
-import br.com.fiap.doafacil.ui.theme.DeepGrey
 import br.com.fiap.doafacil.ui.theme.DoafacilTheme
-import br.com.fiap.doafacil.ui.theme.GreenBackground
 import br.com.fiap.doafacil.ui.theme.GreyText
 import br.com.fiap.doafacil.ui.theme.LightGreen
 
+// ─────────────────────────────────────────────────────────────────────────────
+// TELA
+// ─────────────────────────────────────────────────────────────────────────────
 
 @Composable
 fun DoacaoScreen(navController: NavController, modifier: Modifier = Modifier) {
-
-    Surface(modifier = Modifier.fillMaxSize()) {
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+    ) {
         Scaffold(
-
-            topBar = {},
-
-            bottomBar = { MyBottomNavigation(navController = navController) },
-
-            floatingActionButton = {}
-        )
-        {
-                paddingValues ->
+            containerColor = Color.Transparent,
+            bottomBar = { MyBottomNavigation(navController = navController) }
+        ) { paddingValues ->
             ContentScreenDonation(
                 modifier = Modifier.padding(paddingValues),
                 navController = navController
@@ -84,27 +81,37 @@ fun DoacaoScreen(navController: NavController, modifier: Modifier = Modifier) {
     }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// CONTEÚDO
+// ─────────────────────────────────────────────────────────────────────────────
+
 @Composable
 fun ContentScreenDonation(modifier: Modifier = Modifier, navController: NavController) {
     val context = LocalContext.current
     val userPrefs = remember { UserPreferences(context) }
 
-    var itens by remember { mutableStateOf(getAllDoacaoItens()) }
-    var tipoDoacao by remember { mutableStateOf("itens") }
-    var tipoMetodo by remember { mutableStateOf(userPrefs.getMetodoEntrega()) }
+    var itens       by remember { mutableStateOf(getAllDoacaoItens()) }
+    var tipoDoacao  by remember { mutableStateOf("itens") }
+    var tipoMetodo  by remember { mutableStateOf(userPrefs.getMetodoEntrega()) }
 
     LazyColumn(modifier = modifier.fillMaxSize()) {
         item { HeaderDonation() }
         item { OngHeaderDoacao() }
-        item { DonationChoices(tipoDoacao = tipoDoacao, onTipoChange = { tipoDoacao = it }) }
+        item {
+            DonationChoices(
+                tipoDoacao = tipoDoacao,
+                onTipoChange = { tipoDoacao = it }
+            )
+        }
 
         if (tipoDoacao == "itens") {
             item {
                 Text(
                     text = "Selecione os Itens: 👕🧺",
+                    style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
                 )
             }
             items(itens) { item ->
@@ -140,58 +147,82 @@ fun ContentScreenDonation(modifier: Modifier = Modifier, navController: NavContr
 
 @Composable
 fun HeaderDonation(modifier: Modifier = Modifier) {
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .background(color = BluePrimary)) {
-
-        Image(
-            painter = painterResource(R.drawable.logo_doafacil),
-            contentDescription = "",
-            modifier = Modifier
-                .height(50.dp)
-                .width(50.dp)
-        )
-
-        Spacer(modifier = Modifier.width(10.dp))
-
-        Text(
-            text = "Montar Doação",
-            color = MaterialTheme.colorScheme.secondary
-        )
-
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.primary)
+            .padding(horizontal = 20.dp, vertical = 4.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(R.drawable.logo_doafacil),
+                contentDescription = "Logo DoaFácil",
+                modifier = Modifier.size(80.dp)
+            )
+            Spacer( modifier = Modifier.width(60.dp) )
+            Text(
+                text = stringResource(R.string.montar_doacao),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onPrimary,
+                fontWeight = FontWeight.Bold
+            )
+        }
     }
 }
 
 @Composable
 fun OngHeaderDoacao(modifier: Modifier = Modifier) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-        Image(
-            painter = painterResource(R.drawable.no_photo),
-            contentDescription = "",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(56.dp)
-                .clip(RoundedCornerShape(12.dp))
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
         )
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(12.dp)
+        ) {
 
-        Spacer(modifier = Modifier.width(12.dp))
+            Image(
+                painter = painterResource(R.drawable.family),
+                contentDescription = "Foto da ONG",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(56.dp)
+                    .clip(RoundedCornerShape(12.dp))
+            )
 
-        Column {
-            Text(text = "Abrigo Vida Nova", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.CheckCircle,
-                    contentDescription = "",
-                    tint = LightGreen,
-                    modifier = Modifier.size(14.dp)
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column {
+                Text(
+                    text = "Abrigo Vida Nova",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(text = "Verificado", fontSize = 12.sp, color = LightGreen)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.CheckCircle,
+                        contentDescription = "",
+                        tint = LightGreen,
+                        modifier = Modifier.size(14.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "Verificado",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = LightGreen
+                    )
+                }
             }
         }
     }
@@ -206,38 +237,31 @@ fun DonationChoices(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 16.dp, vertical = 4.dp)
             .clip(RoundedCornerShape(50))
-            .background(DeepGrey)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(4.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        // Botão Itens
-        Button(
-            onClick = { onTipoChange("itens") },
-            shape = RoundedCornerShape(50),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (tipoDoacao == "itens") LightGreen else Color.Transparent,
-                contentColor = if (tipoDoacao == "itens") DarkBlue else GreyText
-            ),
-            modifier = Modifier.weight(1f),
-            elevation = ButtonDefaults.buttonElevation(0.dp)
-        ) {
-            Text(text = "Itens 👕🧺", fontWeight = FontWeight.Medium)
-        }
-
-        // Botão Dinheiro
-        Button(
-            onClick = { onTipoChange("dinheiro") },
-            shape = RoundedCornerShape(50),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (tipoDoacao == "dinheiro") LightGreen else Color.Transparent,
-                contentColor = if (tipoDoacao == "dinheiro") DarkBlue else GreyText
-            ),
-            modifier = Modifier.weight(1f),
-            elevation = ButtonDefaults.buttonElevation(0.dp)
-        ) {
-            Text(text = "Dinheiro 💰", fontWeight = FontWeight.Medium)
+        listOf(
+            "itens"    to "Itens 👕🧺",
+            "dinheiro" to "Dinheiro 💰"
+        ).forEach { (tipo, label) ->
+            val selecionado = tipoDoacao == tipo
+            Button(
+                onClick = { onTipoChange(tipo) },
+                shape = RoundedCornerShape(50),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (selecionado) MaterialTheme.colorScheme.secondary
+                    else Color.Transparent,
+                    contentColor   = if (selecionado) MaterialTheme.colorScheme.onSecondary
+                    else GreyText
+                ),
+                modifier = Modifier.weight(1f),
+                elevation = ButtonDefaults.buttonElevation(0.dp)
+            ) {
+                Text(text = label, style = MaterialTheme.typography.labelMedium)
+            }
         }
     }
 }
@@ -249,100 +273,85 @@ fun DonationConfirmations(
     onTipoChange: (String) -> Unit,
     onGerarResumo: () -> Unit = {}
 ) {
-    Column(modifier = modifier.padding(16.dp)) {
+    Column(modifier = modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
 
         Text(
             text = "Método de Entrega",
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(bottom = 12.dp)
         )
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            // Botão Levar ao Local
-            OutlinedButton(
-                onClick = { onTipoChange("Levar ao Local") },
-                shape = RoundedCornerShape(16.dp),
-                border = BorderStroke(
-                    1.5.dp,
-                    if (tipoMetodo == "Levar ao Local") LightGreen else GreyText
-                ),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = if (tipoMetodo == "Levar ao Local") GreenBackground else Color.Transparent
-                ),
-                modifier = Modifier
-                    .weight(1f)
-                    .height(80.dp)
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(text = "🚗", fontSize = 22.sp)
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "Levar ao Local",
-                        fontWeight = FontWeight.Bold,
-                        color = DarkBlue,
-                        fontSize = 13.sp
-                    )
-                }
-            }
-
-            // Botão Entrega via Transporte
-            OutlinedButton(
-                onClick = { onTipoChange("Entrega via Transporte") },
-                shape = RoundedCornerShape(16.dp),
-                border = BorderStroke(
-                    1.5.dp,
-                    if (tipoMetodo == "Entrega via Transporte") LightGreen else GreyText
-                ),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = if (tipoMetodo == "Entrega via Transporte") GreenBackground else Color.Transparent
-                ),
-                modifier = Modifier
-                    .weight(1f)
-                    .height(80.dp)
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(text = "📦", fontSize = 22.sp)
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "Entrega via Transporte",
-                        fontWeight = FontWeight.Bold,
-                        color = DarkBlue,
-                        fontSize = 13.sp
-                    )
+            listOf(
+                "Levar ao Local"        to "🚗",
+                "Entrega via Transporte" to "📦"
+            ).forEach { (metodo, emoji) ->
+                val selecionado = tipoMetodo == metodo
+                OutlinedButton(
+                    onClick = { onTipoChange(metodo) },
+                    shape = RoundedCornerShape(16.dp),
+                    border = BorderStroke(
+                        1.5.dp,
+                        if (selecionado) MaterialTheme.colorScheme.secondary
+                        else MaterialTheme.colorScheme.outline
+                    ),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = if (selecionado)
+                            MaterialTheme.colorScheme.secondaryContainer
+                        else Color.Transparent
+                    ),
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(80.dp)
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(text = emoji, fontSize = 22.sp)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = metodo,
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(2.dp))
+        Spacer(modifier = Modifier.height(6.dp))
 
         Text(
             text = "Rua das Flores, 123 | Seg-Sex, 9h-17h",
-            fontSize = 13.sp,
+            style = MaterialTheme.typography.bodySmall,
             color = GreyText,
-            modifier = Modifier.padding(bottom = 24.dp)
+            modifier = Modifier.padding(bottom = 20.dp)
         )
 
-        // Botão Gerar Resumo
         Button(
             onClick = onGerarResumo,
             shape = RoundedCornerShape(50),
-            colors = ButtonDefaults.buttonColors(containerColor = LightGreen),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondary,
+                contentColor   = MaterialTheme.colorScheme.onSecondary
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(52.dp)
         ) {
             Text(
-                text = "Gerar Resumo 📋",
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
-                color = DarkBlue
+                text = stringResource(R.string.doar),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Bold
             )
         }
+
+        Spacer(modifier = Modifier.height(8.dp))
     }
 }
 
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun DoacaoScreenPreview() {
     DoafacilTheme {

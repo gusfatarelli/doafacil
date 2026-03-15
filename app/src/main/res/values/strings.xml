@@ -12,4 +12,7 @@
     <string name="your_password">Sua Senha</string>
     <string name="create_account">Criar Conta</string>
     <string name="doaf_cil">DoaFácil</string>
+    <string name="explorar_instituicoes">Explorar Instituições</string>
+    <string name="doar">Doar 📋</string>
+    <string name="montar_doacao">Montar Doação</string>
 </resources>

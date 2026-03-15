@@ -185,7 +185,11 @@ fun LoginForm(modifier: Modifier = Modifier, navController: NavController) {
                     contentDescription = "",
                     tint = MaterialTheme.colorScheme.onPrimary
                 )
-            }
+            },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next
+            )
         )
         // Caixa senha
         OutlinedTextField(
@@ -218,7 +222,11 @@ fun LoginForm(modifier: Modifier = Modifier, navController: NavController) {
                     contentDescription = "",
                     tint = MaterialTheme.colorScheme.onPrimary
                 )
-            }
+            },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Done
+            ),
         )
         Spacer(modifier = Modifier.height(32.dp))
         // Botão entrar

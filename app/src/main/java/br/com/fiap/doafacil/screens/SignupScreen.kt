@@ -157,6 +157,7 @@ fun SignupUserForm(navController: NavController?, modifier: Modifier = Modifier)
             .fillMaxWidth()
             .padding(32.dp)
     )
+
     //Caixa de Texto do Usuário
     {
 

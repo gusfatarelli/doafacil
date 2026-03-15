@@ -16,7 +16,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import br.com.fiap.doafacil.ui.theme.*
+import br.com.fiap.doafacil.ui.theme.GreyText
+import br.com.fiap.doafacil.ui.theme.LightGreen
 
 data class DoacaoItem(
     val id: Int = 0,
@@ -33,8 +34,15 @@ fun DoacaoItemCard(
     onQuantidadeChange: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val backgroundColor = if (item.selecionado) GreenBackground else Color.Transparent
-    val borderColor = if (item.selecionado) LightGreen else DeepGrey
+    val backgroundColor = if (item.selecionado)
+        MaterialTheme.colorScheme.primaryContainer
+    else
+        Color.Transparent
+
+    val borderColor = if (item.selecionado)
+        MaterialTheme.colorScheme.secondary
+    else
+        MaterialTheme.colorScheme.outlineVariant
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -44,44 +52,50 @@ fun DoacaoItemCard(
             .clip(RoundedCornerShape(12.dp))
             .background(backgroundColor)
             .border(1.5.dp, borderColor, RoundedCornerShape(12.dp))
-            .padding(12.dp)
+            .padding(8.dp)
     ) {
         // Checkbox
         Checkbox(
             checked = item.selecionado,
             onCheckedChange = onSelecionadoChange,
             colors = CheckboxDefaults.colors(
-                checkedColor = LightGreen,
+                checkedColor   = MaterialTheme.colorScheme.secondary,
                 uncheckedColor = GreyText
             )
         )
 
-        // Ícone emoji
-        Text(text = item.icone, fontSize = 24.sp, modifier = Modifier.padding(horizontal = 8.dp))
-
-        // Nome
         Text(
-            text = item.nome,
-            fontSize = 15.sp,
-            fontWeight = FontWeight.Medium,
-            modifier = Modifier.weight(1f),
-            color = DarkBlue
+            text = item.icone,
+            fontSize = 22.sp,
+            modifier = Modifier.padding(horizontal = 6.dp)
         )
 
-        // Controle de quantidade
+        Text(
+            text = item.nome,
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.weight(1f),
+            color = MaterialTheme.colorScheme.onBackground
+        )
+
+        // Controle +/-
         Row(verticalAlignment = Alignment.CenterVertically) {
             IconButton(
                 onClick = { if (item.quantidade > 1) onQuantidadeChange(item.quantidade - 1) },
                 modifier = Modifier.size(28.dp)
             ) {
-                Icon(imageVector = Icons.Default.Remove, contentDescription = "Diminuir", tint = BluePrimary)
+                Icon(
+                    imageVector = Icons.Default.Remove,
+                    contentDescription = "Diminuir",
+                    tint = MaterialTheme.colorScheme.primary
+                )
             }
 
             Text(
                 text = "${item.quantidade}",
-                fontSize = 15.sp,
+                style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.Bold,
-                color = DarkBlue,
+                color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.padding(horizontal = 4.dp)
             )
 
@@ -89,7 +103,11 @@ fun DoacaoItemCard(
                 onClick = { onQuantidadeChange(item.quantidade + 1) },
                 modifier = Modifier.size(28.dp)
             ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Aumentar", tint = BluePrimary)
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Aumentar",
+                    tint = MaterialTheme.colorScheme.primary
+                )
             }
         }
     }
