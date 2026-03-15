@@ -550,12 +550,3 @@ fun DonationConfirmations(
         Spacer(modifier = Modifier.height(8.dp))
     }
 }
-
-
-@Preview(showSystemUi = true)
-@Composable
-private fun DoacaoScreenPreview() {
-    DoafacilTheme {
-        DoacaoScreen(rememberNavController())
-    }
-}

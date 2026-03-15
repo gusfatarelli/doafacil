@@ -43,15 +43,12 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import br.com.fiap.doafacil.R
 import br.com.fiap.doafacil.navigation.Destination
 import br.com.fiap.doafacil.repository.UserPreferences
 import br.com.fiap.doafacil.ui.theme.DarkBlue
-import br.com.fiap.doafacil.ui.theme.DoafacilTheme
 
 @Composable
 fun CadastroScreen(navController: NavController, modifier: Modifier = Modifier) {
@@ -102,14 +99,6 @@ fun TituloCadastro(modifier: Modifier = Modifier) {
 
     }
 
-}
-
-@Preview
-@Composable
-private fun TituloCadastroPrevier() {
-    DoafacilTheme{
-        TituloCadastro()
-    }
 }
 
 @Composable
@@ -384,13 +373,5 @@ fun SignupUserForm(navController: NavController?, modifier: Modifier = Modifier)
                 TextButton(onClick = { showDialogError = false }) { Text("Ok") }
             }
         )
-    }
-}
-
-@Preview
-@Composable
-private fun SignupUserFormPreviwe() {
-    DoafacilTheme{
-        SignupUserForm(rememberNavController())
     }
 }

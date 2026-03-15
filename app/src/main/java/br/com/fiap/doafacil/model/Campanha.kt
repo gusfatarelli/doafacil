@@ -7,5 +7,5 @@ data class Campanha(
     val id: Int = 0,
     val titulo: String = "",
     val descricao: String = "",
-    @DrawableRes val image: Int? = R.drawable.no_photo,
+    @DrawableRes val image: Int? = R.drawable.logo_doafacil,
 )

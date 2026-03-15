@@ -13,5 +13,5 @@ data class Ong(
     val urgencias: List<String> = emptyList(),
     val descricao: String = "",
     val progressDoacao: Int = 0,
-    @DrawableRes val image: Int = R.drawable.no_photo
+    @DrawableRes val image: Int = R.drawable.logo_doafacil
 )
