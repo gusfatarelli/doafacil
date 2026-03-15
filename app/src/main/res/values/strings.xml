@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">doafacil</string>
+    <string name="app_name">DoaFacil</string>
     <string name="seu_e_mail">Seu e-mail</string>
     <string name="sua_senha">Sua senha</string>
     <string name="entrar">Entrar</string>
@@ -8,8 +8,8 @@
     <string name="doa_f_cil">DoaFacil</string>
     <string name="toda_ajuda_conta_comece_hoje">Toda ajuda conta \n Comece hoje!</string>
     <string name="crie_sua_conta">Crie sua conta.</string>
-    <string name="your_name">SeuNome</string>
-    <string name="your_password">SuaSenha</string>
-    <string name="create_account">CriarConta</string>
+    <string name="your_name">Seu Nome</string>
+    <string name="your_password">Sua Senha</string>
+    <string name="create_account">Criar Conta</string>
     <string name="doaf_cil">DoaFácil</string>
 </resources>

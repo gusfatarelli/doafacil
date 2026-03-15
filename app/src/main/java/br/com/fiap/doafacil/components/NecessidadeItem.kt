@@ -1,6 +1,7 @@
 package br.com.fiap.doafacil.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.fiap.doafacil.model.PriorityLevel
+import br.com.fiap.doafacil.ui.theme.DarkBlue
 import br.com.fiap.doafacil.ui.theme.DeepGrey
 import br.com.fiap.doafacil.ui.theme.GreyText
 import br.com.fiap.doafacil.ui.theme.LightGreen
@@ -43,7 +45,9 @@ fun NecessidadeCardItem(
     Card(
         modifier = modifier
             .width(180.dp)
-            .padding(8.dp),
+            .padding(8.dp)
+            .border( 1.dp, Color.LightGray, RoundedCornerShape(16.dp)
+            ),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
@@ -51,7 +55,7 @@ fun NecessidadeCardItem(
             modifier = Modifier.padding(12.dp)
         ) {
             Text(text = necessidade.titulo, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-            Text(text = necessidade.instituicaoNome.nome, fontSize = 13.sp, color = GreyText)
+            Text(text = necessidade.instituicaoNome.nome, fontSize = 13.sp, color = DarkBlue)
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -82,7 +86,8 @@ fun NecessidadeCardItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(8.dp)
-                    .background(DeepGrey, RoundedCornerShape(50))
+                    .background(Color.White, RoundedCornerShape(50))
+                    .border( 1.dp, Color.LightGray, RoundedCornerShape(50))
             ) {
                 Box(
                     modifier = Modifier
@@ -98,7 +103,7 @@ fun NecessidadeCardItem(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = "Faltam", fontSize = 12.sp, color = GreyText)
+                Text(text = "Faltam", fontSize = 12.sp, color = DarkBlue)
                 Text(text = "${necessidade.progress}%", fontSize = 12.sp, fontWeight = FontWeight.Bold)
             }
 
@@ -109,7 +114,7 @@ fun NecessidadeCardItem(
                 Text(
                     text = "${necessidade.quantity}/100",
                     fontSize = 12.sp,
-                    color = GreyText
+                    color = DarkBlue
                 )
             }
         }

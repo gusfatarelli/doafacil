@@ -9,8 +9,8 @@
     <string name="doa_f_cil">DoaFacil</string>
     <string name="toda_ajuda_conta_comece_hoje">Every bit helps \n Start today!</string>
     <string name="crie_sua_conta">Create your account.</string>
-    <string name="your_name">YourName</string>
-    <string name="your_password">YourPassword</string>
-    <string name="create_account">CreateAccount</string>
+    <string name="your_name">Your Name</string>
+    <string name="your_password">Your Password</string>
+    <string name="create_account">Create Account</string>
     <string name="doaf_cil">DoaFácil</string>
 </resources>

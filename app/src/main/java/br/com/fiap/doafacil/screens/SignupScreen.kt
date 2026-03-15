@@ -394,10 +394,10 @@ fun SignupUserForm(navController: NavController?, modifier: Modifier = Modifier)
     }
 }
 
-//@Preview
-//@Composable
-//private fun SignupUserFormPreviwe() {
-//    DoafacilTheme{
-//        SignupUserForm(rememberNavController())
-//    }
-//}
+@Preview
+@Composable
+private fun SignupUserFormPreviwe() {
+    DoafacilTheme{
+        SignupUserForm(rememberNavController())
+    }
+}

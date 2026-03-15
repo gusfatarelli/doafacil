@@ -1,13 +1,11 @@
 package br.com.fiap.doafacil.screens
 
-import android.graphics.Bitmap
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,286 +16,352 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import br.com.fiap.doafacil.R
+import br.com.fiap.doafacil.components.CampanhaItem
 import br.com.fiap.doafacil.components.Instituicao
 import br.com.fiap.doafacil.components.InstituicaoCardItem
 import br.com.fiap.doafacil.components.Necessidade
 import br.com.fiap.doafacil.components.NecessidadeCardItem
-import br.com.fiap.doafacil.model.PriorityLevel
-import br.com.fiap.doafacil.navigation.Destination
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.compose.rememberNavController
-import br.com.fiap.doafacil.components.CampanhaItem
-import br.com.fiap.doafacil.components.CategoryItem
 import br.com.fiap.doafacil.model.Category
+import br.com.fiap.doafacil.model.PriorityLevel
+import br.com.fiap.doafacil.repository.UserPreferences
 import br.com.fiap.doafacil.repository.getAllCampanhas
 import br.com.fiap.doafacil.repository.getAllCategories
+import br.com.fiap.doafacil.ui.theme.BluePrimary
+import br.com.fiap.doafacil.ui.theme.DarkBlue
+import br.com.fiap.doafacil.ui.theme.DeepGrey
 import br.com.fiap.doafacil.ui.theme.DoafacilTheme
+import br.com.fiap.doafacil.ui.theme.GreenBackground
+import br.com.fiap.doafacil.ui.theme.GreyText
+import br.com.fiap.doafacil.ui.theme.LightGreen
 
 @Composable
 fun HomeScreen(navController: NavController, email: String?) {
-    Surface(modifier = Modifier.fillMaxSize()) {
+    val context = LocalContext.current
+    val userPrefs = remember { UserPreferences(context) }
+    val nome = userPrefs.getName().ifEmpty { email ?: "" }
+
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = Color.White
+    ) {
         Scaffold(
-            topBar = { br.com.fiap.doafacil.screens.MyTopAppBar(email!!, navController) },
+            containerColor = Color.White,
             bottomBar = { MyBottomNavigation(navController = navController) },
             floatingActionButton = {
                 FloatingActionButton(
                     onClick = {},
                     shape = CircleShape,
-                    containerColor = MaterialTheme.colorScheme.primary
+                    containerColor = LightGreen
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
-                        contentDescription = "Button"
+                        contentDescription = "Novo",
+                        tint = DarkBlue
                     )
                 }
             }
-        )
-        {
-                paddingValues ->
+        ) { paddingValues ->
             ContentScreen(
                 modifier = Modifier.padding(paddingValues),
-                navController = navController
+                navController = navController,
+                nome = nome
             )
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyTopAppBar(email: String, navController: NavController) {
-
-//    val user = userRespository.getUserByEmail(email)
-//
-//    val profileBitmap by remember {
-//        mutableStateOf<Bitmap>(convertByteArrayToBitmap(
-//            user!!.userImage!!)
-//        )
-//    }
-
-    TopAppBar(
+fun HomeHeader(nome: String) {
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 4.dp),
-        title = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 2.dp, end = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            .background(BluePrimary)
+            .padding(horizontal = 20.dp, vertical = 16.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
 
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Image(
                     painter = painterResource(R.drawable.logo_doafacil),
-                    contentDescription = "",
-                    modifier = Modifier
-                        .width(300.dp)
-                        .padding(top = 50.dp)
+                    contentDescription = "Logo",
+                    modifier = Modifier.size(36.dp)
                 )
-
-                Text(text = "DoaFácil")
-
-                Card(
-                    shape = CircleShape,
-                    colors = CardDefaults
-                        .cardColors(
-                            containerColor = Color.Transparent
-                        ),
-                    border = BorderStroke(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.primary
-                    ),
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clickable(
-                            //onClick = { navController.navigate("profile/${user!!.email}") }
-                            onClick = {}
-                        )
-                ) {
-                    Image(
-                        //bitmap = profileBitmap.asImageBitmap(),
-                        painter = painterResource(R.drawable.logo_doafacil),
-                        contentDescription = "",
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
-                }
+                Spacer(modifier = Modifier.width(10.dp))
+                Text(
+                    text = stringResource(R.string.app_name),
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp
+                )
             }
 
-            Text(
-                //text = "Hello, ${user!!.name}!",
-                text = "Hello João!",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = email,
-                style = MaterialTheme.typography.displaySmall
-            )
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Notifications,
+                    contentDescription = "Notificações",
+                    tint = Color.White,
+                    modifier = Modifier.size(24.dp)
+                )
+                Image(
+                    painter = painterResource(R.drawable.boy),
+                    contentDescription = "Avatar",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .border( 1.dp, Color.White, CircleShape )
+                )
+            }
         }
+    }
+}
+
+// ── SAUDAÇÃO ────────────────────────────────────────────────────────────────
+
+@Composable
+fun HomeSaudacao(nome: String) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 16.dp)
+    ) {
+        Text(
+            text = "Olá, ${nome.replaceFirstChar { it.uppercase() }}! 👋",
+            fontWeight = FontWeight.Bold,
+            fontSize = 22.sp,
+            color = DarkBlue
+        )
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+            text = "O que você quer doar hoje?",
+            fontSize = 14.sp,
+            color = GreyText
+        )
+    }
+}
+
+// ── SEARCH BAR ──────────────────────────────────────────────────────────────
+
+@Composable
+fun HomeSearchBar() {
+    var searchText by remember { mutableStateOf("") }
+
+    OutlinedTextField(
+        value = searchText,
+        onValueChange = { searchText = it },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+        shape = RoundedCornerShape(50.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            unfocusedBorderColor = Color.Transparent,
+            focusedBorderColor = BluePrimary,
+            unfocusedContainerColor = Color.White,
+            focusedContainerColor = Color.White
+        ),
+        placeholder = {
+            Text(
+                text = "Buscar instituições ou causas...",
+                style = MaterialTheme.typography.labelSmall,
+                color = GreyText
+            )
+        },
+        trailingIcon = {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = "Buscar",
+                tint = BluePrimary
+            )
+        },
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Text,
+            imeAction = ImeAction.Search
+        ),
+        singleLine = true
     )
 }
 
-//TELA DE CONTEÚDO
+// ── TÍTULO DE SEÇÃO ─────────────────────────────────────────────────────────
 
 @Composable
-fun ContentScreen(modifier: Modifier = Modifier, navController: NavController) {
+fun SectionTitle(title: String, modifier: Modifier = Modifier) {
+    Text(
+        text = title,
+        fontWeight = FontWeight.Bold,
+        fontSize = 16.sp,
+        color = DarkBlue,
+        modifier = modifier.padding(horizontal = 20.dp, vertical = 10.dp)
+    )
+}
 
+// ── CONTEÚDO PRINCIPAL ───────────────────────────────────────────────────────
+
+@Composable
+fun ContentScreen(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    nome: String = ""
+) {
     val necessidades = listOf(
-        Necessidade(titulo = "Cestas Básicas 🧺", instituicaoNome = Instituicao(nome = "ONG Vida Nova", categorias = "", distancia = ""), prioridade = PriorityLevel.URGENTE, progress = 80, quantity = 20),
-        Necessidade(titulo = "Fraldas G 👶", instituicaoNome = Instituicao(nome = "Abrigo Esperança", categorias = "", distancia = ""), prioridade = PriorityLevel.URGENTE, progress = 60, quantity = 40),
-        Necessidade(titulo = "Agasalhos", instituicaoNome = Instituicao(nome = "ONG Vida Nova", categorias = "", distancia = ""), prioridade = PriorityLevel.URGENTE, progress = 45, quantity = 55),
-        Necessidade(titulo = "Leite em Pó", instituicaoNome = Instituicao(nome = "Abrigo Feliz", categorias = "", distancia = ""), prioridade = PriorityLevel.NORMAL, progress = 30, quantity = 70)
+        Necessidade(
+            titulo = "Cestas Básicas 🧺",
+            instituicaoNome = Instituicao(nome = "ONG Vida Nova", categorias = "", distancia = ""),
+            prioridade = PriorityLevel.URGENTE, progress = 80, quantity = 20
+        ),
+        Necessidade(
+            titulo = "Fraldas G 👶",
+            instituicaoNome = Instituicao(nome = "Abrigo Esperança", categorias = "", distancia = ""),
+            prioridade = PriorityLevel.URGENTE, progress = 60, quantity = 40
+        ),
+        Necessidade(
+            titulo = "Agasalhos",
+            instituicaoNome = Instituicao(nome = "ONG Vida Nova", categorias = "", distancia = ""),
+            prioridade = PriorityLevel.URGENTE, progress = 45, quantity = 55
+        ),
+        Necessidade(
+            titulo = "Leite em Pó",
+            instituicaoNome = Instituicao(nome = "Abrigo Feliz", categorias = "", distancia = ""),
+            prioridade = PriorityLevel.NORMAL, progress = 30, quantity = 70
+        )
     )
 
     val instituicoes = listOf(
-        Instituicao(nome = "Abrigo Feliz", categorias = "Crianças | Roupas | Alimentos", distancia = "3.2 km", prioridade = PriorityLevel.URGENTE),
-        Instituicao(nome = "Banco de Alimentos SP", categorias = "Fome | Alimentos", distancia = "4.1 km"),
+        Instituicao(
+            nome = "Abrigo Feliz",
+            categorias = "Crianças | Roupas | Alimentos",
+            distancia = "3.2 km",
+            prioridade = PriorityLevel.URGENTE
+        ),
+        Instituicao(
+            nome = "Banco de Alimentos SP",
+            categorias = "Fome | Alimentos",
+            distancia = "4.1 km"
+        )
     )
 
     var selectedCategory by remember { mutableStateOf<Category?>(getAllCategories().first()) }
 
-    LazyColumn(modifier = modifier.fillMaxSize()) {
+    LazyColumn(
+        modifier = modifier.fillMaxSize()
+    ) {
+        // Header azul
+        item { HomeHeader(nome = nome) }
+
+        // Saudação
+        item { HomeSaudacao(nome = nome) }
 
         // Search bar
-        item {
-            OutlinedTextField(
-                value = "",
-                onValueChange = {},
-                modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedBorderColor = Color.Transparent,
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedContainerColor = Color.LightGray
-                ),
-                label = {
-                    Text(text = "Buscar instituições ou causas.", style = MaterialTheme.typography.labelSmall)
-                },
-                trailingIcon = {
-                    Icon(imageVector = Icons.Default.Search, contentDescription = "Search", tint = MaterialTheme.colorScheme.tertiary)
-                },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Search)
-            )
-        }
+        item { HomeSearchBar() }
+
+        item { Spacer(Modifier.height(4.dp)) }
 
         // Categorias
         item {
-            CategoryLazyRow(
-                selectedCategory = selectedCategory,
-                onCategoryClick = { selectedCategory = it }
-            )
+            SectionTitle("Categorias")
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.padding(horizontal = 16.dp)
+            ) {
+                items(getAllCategories().filter { it.name.isNotEmpty() }) { category ->
+                    br.com.fiap.doafacil.components.CategoryItem(
+                        category = category,
+                        isSelected = selectedCategory?.id == category.id,
+                        onCategoryClick = { selectedCategory = it }
+                    )
+                }
+            }
         }
 
-        item { Spacer(Modifier.height(16.dp)) }
+        item { Spacer(Modifier.height(4.dp)) }
 
-        // Título Necessidades
-        item {
-            Text(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                text = "Necessidades Urgentes",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
+        // Necessidades Urgentes
+        item { SectionTitle("Necessidades Urgentes") }
 
-        // LazyRow de Necessidades
         item {
-            LazyRow {
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(0.dp),
+                modifier = Modifier.padding(horizontal = 8.dp)
+            ) {
                 items(necessidades) { necessidade ->
                     NecessidadeCardItem(necessidade = necessidade)
                 }
             }
         }
 
-        // Título Instituições
-        item {
-            Text(
-                text = "Instituições Próximas",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
-            )
-        }
+        // Instituições Próximas
+        item { SectionTitle("Instituições Próximas 📍") }
 
-        // Lista de Instituições
         items(instituicoes) { instituicao ->
-            InstituicaoCardItem(instituicao = instituicao)
-        }
-
-        // Título Campanhas
-        item {
-            Text(
-                text = "Campanhas em Destaque",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+            InstituicaoCardItem(
+                instituicao = instituicao,
+                modifier = Modifier.padding(horizontal = 8.dp)
             )
         }
 
-        // LazyRow de Campanhas
+        // Campanhas em Destaque
+        item { SectionTitle("Campanhas em Destaque") }
+
         item {
-            LazyRow {
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(0.dp),
+                modifier = Modifier.padding(horizontal = 8.dp)
+            ) {
                 items(getAllCampanhas()) { campanha ->
                     CampanhaItem(
                         campanha = campanha,
-                        onSaberMaisClick = { }
+                        onSaberMaisClick = {}
                     )
                 }
             }
         }
 
-        item { Spacer(Modifier.height(16.dp)) }
+        item { Spacer(Modifier.height(24.dp)) }
     }
 }
 

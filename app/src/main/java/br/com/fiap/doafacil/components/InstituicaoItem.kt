@@ -1,6 +1,7 @@
 package br.com.fiap.doafacil.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -55,7 +56,8 @@ fun InstituicaoCardItem(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(8.dp)
+            .border( 1.dp, Color.LightGray, RoundedCornerShape(16.dp) ),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
@@ -96,7 +98,7 @@ fun InstituicaoCardItem(
                                 modifier = Modifier.size(12.dp)
                             )
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text(text = "Verificado", color = Color.White, fontSize = 11.sp)
+                            Text(text = "Verificado", color = Color.Black, fontSize = 11.sp)
                         }
                     }
 
