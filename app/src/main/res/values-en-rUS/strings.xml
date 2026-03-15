@@ -1,19 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">doafacil</string>
-    <string name="seu_e_mail">Your email</string>
+    <!-- App -->
+    <string name="app_name">DoaFácil</string>
+
+    <!-- Login -->
+    <string name="seu_e_mail">Your e-mail</string>
     <string name="sua_senha">Your password</string>
-    <string name="entrar">Sign in</string>
-    <string name="entrar_como_convidado">Sign in as guest</string>
-    <string name="entrar_convidado">Sign in as guest</string>
-    <string name="doa_f_cil">DoaFacil</string>
-    <string name="toda_ajuda_conta_comece_hoje">Every bit helps \n Start today!</string>
-    <string name="crie_sua_conta">Create your account.</string>
-    <string name="your_name">Your Name</string>
-    <string name="your_password">Your Password</string>
+    <string name="entrar">Sign In</string>
+    <string name="entrar_como_convidado">Continue as Guest</string>
+    <string name="entrar_convidado">Continue as Guest</string>
+
+    <!-- Cadastro -->
+    <string name="doa_f_cil">DoaFácil</string>
+    <string name="toda_ajuda_conta_comece_hoje">Every bit helps.\nStart today!</string>
+    <string name="crie_sua_conta">Create your account</string>
+    <string name="your_name">Your name</string>
+    <string name="your_password">Your password</string>
     <string name="create_account">Create Account</string>
-    <string name="doaf_cil">DoaFácil</string>
-    <string name="explorar_instituicoes">Explorar Instituições</string>
-    <string name="doar">Doar 📋</string>
-    <string name="montar_doacao">Montar Doação</string>
+
+    <!-- Navegação / Telas -->
+    <string name="nav_inicio">Home</string>
+    <string name="nav_explorar">Explore</string>
+    <string name="nav_perfil">Profile</string>
+    <string name="explorar_instituicoes">Explore Organizations</string>
+    <string name="montar_doacao">Build Your Donation</string>
+    <string name="doar">Confirm Donation 📋</string>
+
+    <!-- Home -->
+    <string name="saudacao_subtitulo">What would you like to donate today?</string>
+    <string name="buscar_placeholder">Search organizations or causes</string>
+    <string name="secao_categorias">Categories</string>
+    <string name="secao_necessidades">Urgent Needs </string>
+    <string name="secao_instituicoes">Nearby Organizations </string>
+    <string name="secao_campanhas">Featured Campaigns </string>
+
+    <!-- Componentes -->
+    <string name="verificado">Verified</string>
+    <string name="urgente">Urgent</string>
+    <string name="normal">Normal</string>
+    <string name="saber_mais">Learn More</string>
+    <string name="quero_doar">Donate Now</string>
+    <string name="faltam">Remaining</string>
+
+    <!-- Doação -->
+    <string name="selecione_itens">Select Items: 👕🧺</string>
+    <string name="metodo_entrega">Delivery Method</string>
+    <string name="levar_ao_local">Drop Off In Person</string>
+    <string name="entrega_transporte">Ship via Carrier</string>
+    <string name="endereco_horario">123 Flores St. | Mon–Fri, 9am–5pm</string>
+
+    <!-- Perfil -->
+    <string name="meu_perfil">My Profile</string>
+    <string name="editar_perfil">Edit Profile</string>
+    <string name="sair_conta">Sign Out</string>
+    <string name="historico_doacoes">Donation History</string>
+    <string name="instituicoes_favoritas">Favorite Organizations</string>
+    <string name="configuracoes">Settings</string>
+    <string name="caminho_impacto">Your Impact Journey ✨</string>
+    <string name="suas_conquistas">Your Achievements 🏅</string>
+    <string name="doe_com_prop_sito_impacte_de_verdade">Donate with porpouse.\nMake the difference.</string>
+    <string name="nao_tem_conta">Does not have an account?</string>
+    <string name="cadastre_se">Sign-up!</string>
 </resources>

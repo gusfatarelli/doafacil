@@ -305,14 +305,6 @@ fun SignupUserForm(navController: NavController?, modifier: Modifier = Modifier)
                 )
             },
 
-            //trailingIcon = {
-            //Icon(
-            //imageVector = Icons.Default.RemoveRedEye,
-            //contentDescription = "",
-            //tint = MaterialTheme.colorScheme.tertiary
-            //)
-            //},
-
             isError = isPasswordError,
             trailingIcon = {
                 if (isPasswordError) {

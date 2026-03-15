@@ -1,7 +1,6 @@
 package br.com.fiap.doafacil.screens
 
 import android.content.res.Configuration
-import android.graphics.drawable.Icon
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,11 +20,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.RemoveRedEye
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -48,6 +45,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -60,28 +58,21 @@ import br.com.fiap.doafacil.repository.UserPreferences
 import br.com.fiap.doafacil.ui.theme.DarkBlue
 import br.com.fiap.doafacil.ui.theme.DoafacilTheme
 
+
 @Composable
 fun LoginScreen(navController: NavController) {
-
     val scrollState = rememberScrollState()
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
+
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp)
                 .align(Alignment.TopEnd),
             shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp),
-            colors = CardDefaults
-                .cardColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                )
-        ) {
-
-        }
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
+        ) {}
 
         Column(
             modifier = Modifier
@@ -97,13 +88,13 @@ fun LoginScreen(navController: NavController) {
                     .padding(top = 60.dp)
             )
             Text(
-                text = "Doa Fácil",
+                text = stringResource(R.string.doa_f_cil),
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.Bold
             )
             Text(
-                text = "Doe com propósito. \nImpacte de verdade.",
+                text = stringResource(R.string.doe_com_prop_sito_impacte_de_verdade),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyLarge,
                 color = DarkBlue,
@@ -111,132 +102,119 @@ fun LoginScreen(navController: NavController) {
             )
             Image(
                 painter = painterResource(R.drawable.pessoas_doafacil),
-                contentDescription = "Pessoas ilustrativas",
-                modifier = Modifier.fillMaxWidth().padding(16.dp)
+                contentDescription = "Pessoas",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
             )
             LoginForm(navController = navController)
             Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }
-// Caixa do e-mail
+
+
 @Composable
 fun LoginForm(modifier: Modifier = Modifier, navController: NavController) {
-
-    val context = LocalContext.current
+    val context   = LocalContext.current
     val userPrefs = remember { UserPreferences(context) }
 
-    var email by remember { mutableStateOf("") }
+    var email    by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var showUserNotFound  by remember { mutableStateOf(false) }
+    var showWrongPassword by remember { mutableStateOf(false) }
 
-    var showDialogUserNotFound by remember { mutableStateOf(false) }
-    var showDialogWrongPassword by remember { mutableStateOf(false) }
-
-    if (showDialogUserNotFound) {
+    if (showUserNotFound) {
         AlertDialog(
-            onDismissRequest = { showDialogUserNotFound = false },
-            title = { Text("Usuário não encontrado") },
-            text = { Text("Este e-mail não está cadastrado.") },
+            onDismissRequest = { showUserNotFound = false },
+            title   = { Text("Usuário não encontrado") },
+            text    = { Text("Este e-mail não está cadastrado.") },
             confirmButton = {
-                TextButton(onClick = { showDialogUserNotFound = false }) { Text("Ok") }
+                TextButton(onClick = { showUserNotFound = false }) { Text("Ok") }
             }
         )
     }
-
-    if (showDialogWrongPassword) {
+    if (showWrongPassword) {
         AlertDialog(
-            onDismissRequest = { showDialogWrongPassword = false },
-            title = { Text("Senha incorreta") },
-            text = { Text("A senha informada está incorreta.") },
+            onDismissRequest = { showWrongPassword = false },
+            title   = { Text("Senha incorreta") },
+            text    = { Text("A senha informada está incorreta.") },
             confirmButton = {
-                TextButton(onClick = { showDialogWrongPassword = false }) { Text("Ok") }
+                TextButton(onClick = { showWrongPassword = false }) { Text("Ok") }
             }
         )
     }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        // Campo e-mail
         OutlinedTextField(
             value = email,
-            onValueChange = { emailState -> email = emailState },
+            onValueChange = { email = it },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 4.dp),
             shape = RoundedCornerShape(16.dp),
-            colors = OutlinedTextFieldDefaults
-                .colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary
-                ),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor   = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outline
+            ),
             label = {
-                Text(
-                    text = stringResource(R.string.seu_e_mail),
-                    style = MaterialTheme.typography.labelSmall
-                )
+                Text(stringResource(R.string.seu_e_mail), style = MaterialTheme.typography.labelSmall)
             },
             leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Email,
-                    contentDescription = "",
-                    tint = MaterialTheme.colorScheme.onPrimary
-                )
+                Icon(Icons.Default.Email, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
             },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
-                imeAction = ImeAction.Next
-            )
+                imeAction    = ImeAction.Next
+            ),
+            singleLine = true
         )
-        // Caixa senha
+
+        // Campo senha
         OutlinedTextField(
             value = password,
-            onValueChange = { passwordState -> password = passwordState },
-            modifier = Modifier
-                .fillMaxWidth(),
+            onValueChange = { password = it },
+            modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
-            colors = OutlinedTextFieldDefaults
-                .colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary
-                ),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor   = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outline
+            ),
             label = {
-                Text(
-                    text = stringResource(R.string.sua_senha),
-                    style = MaterialTheme.typography.labelSmall
-                )
+                Text(stringResource(R.string.sua_senha), style = MaterialTheme.typography.labelSmall)
             },
             leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Lock,
-                    contentDescription = "",
-                    tint = MaterialTheme.colorScheme.onPrimary
-                )
+                Icon(Icons.Default.Lock, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
             },
             trailingIcon = {
-                Icon(
-                    imageVector = Icons.Default.RemoveRedEye,
-                    contentDescription = "",
-                    tint = MaterialTheme.colorScheme.onPrimary
-                )
+                Icon(Icons.Default.RemoveRedEye, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
             },
+            visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Done
+                imeAction    = ImeAction.Done
             ),
+            singleLine = true
         )
+
         Spacer(modifier = Modifier.height(32.dp))
-        // Botão entrar
+
+        // Botão Entrar
         Button(
             onClick = {
                 when {
-                    !userPrefs.userExists(email) -> showDialogUserNotFound = true
-                    !userPrefs.checkPassword(email, password) -> showDialogWrongPassword = true
+                    !userPrefs.userExists(email) -> showUserNotFound = true
+                    !userPrefs.checkPassword(email, password) -> showWrongPassword = true
                     else -> {
-                        userPrefs.saveUser(email)
+                        val nome = userPrefs.getRegisteredName(email)
+                        userPrefs.saveUser(email, nome)
                         navController.navigate("${Destination.HomeScreen.route}/$email") {
                             popUpTo(Destination.LoginScreen.route) { inclusive = true }
                         }
@@ -248,18 +226,15 @@ fun LoginForm(modifier: Modifier = Modifier, navController: NavController) {
                 .height(48.dp),
             shape = RoundedCornerShape(30.dp)
         ) {
-            Text(
-                text = stringResource(R.string.entrar),
-                style = MaterialTheme.typography.labelMedium
-            )
+            Text(stringResource(R.string.entrar), style = MaterialTheme.typography.labelMedium)
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Botão entrar como convidado
+        // Botão Convidado
         Button(
             onClick = {
-                userPrefs.saveUser("convidado")
+                userPrefs.saveUser("convidado", "Convidado")
                 navController.navigate("${Destination.HomeScreen.route}/convidado") {
                     popUpTo(Destination.LoginScreen.route) { inclusive = true }
                 }
@@ -269,30 +244,25 @@ fun LoginForm(modifier: Modifier = Modifier, navController: NavController) {
                 .height(48.dp),
             shape = RoundedCornerShape(30.dp)
         ) {
-            Text(
-                text = stringResource(R.string.entrar_convidado),
-                style = MaterialTheme.typography.labelMedium
-            )
+            Text(stringResource(R.string.entrar_convidado), style = MaterialTheme.typography.labelMedium)
         }
 
         Spacer(modifier = Modifier.height(16.dp))
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            Text(stringResource(R.string.nao_tem_conta), style = MaterialTheme.typography.bodySmall, color = Color.Gray)
             Text(
-                text = "Não tem conta?",
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.Gray
-            )
-            Text(
-                text = "Cadastre-se",
+                text = stringResource(R.string.cadastre_se),
                 style = MaterialTheme.typography.bodySmall.copy(
                     fontWeight = FontWeight.Bold,
                     textDecoration = TextDecoration.Underline
                 ),
-                modifier = Modifier.padding(8.dp)
+                modifier = Modifier
+                    .padding(8.dp)
                     .clickable { navController.navigate(Destination.CadastroScreen.route) }
             )
         }
@@ -302,20 +272,11 @@ fun LoginForm(modifier: Modifier = Modifier, navController: NavController) {
 @Preview
 @Composable
 private fun LoginFormPreview() {
-    DoafacilTheme {
-        LoginForm(navController = rememberNavController())
-    }
+    DoafacilTheme { LoginForm(navController = rememberNavController()) }
 }
 
+@Preview(showBackground = true, showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-@Preview(
-    showBackground = true,
-    showSystemUi = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
-
-fun InitialScreenPreview(){
-    DoafacilTheme {
-        LoginScreen(rememberNavController())
-    }
+fun LoginScreenPreview() {
+    DoafacilTheme { LoginScreen(rememberNavController()) }
 }
