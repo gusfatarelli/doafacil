@@ -84,7 +84,7 @@ fun CampanhaItem(
             }
 
             Image(
-                painter = painterResource(id = campanha.image ?: R.drawable.no_photo),
+                painter = painterResource(id = campanha.image ?: R.drawable.logo_doafacil),
                 contentDescription = campanha.titulo,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
